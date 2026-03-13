@@ -1,0 +1,204 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\BTL React\\QuanLyThueSach\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A28BBF03-63CF-4927-B108-1D81AF589B39}|QuanLyThueSach.DAL\\QuanLyThueSach.DAL.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach.dal\\taikhoandal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A28BBF03-63CF-4927-B108-1D81AF589B39}|QuanLyThueSach.DAL\\QuanLyThueSach.DAL.csproj|solutionrelative:quanlythuesach.dal\\taikhoandal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A28BBF03-63CF-4927-B108-1D81AF589B39}|QuanLyThueSach.DAL\\QuanLyThueSach.DAL.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach.dal\\bandocdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A28BBF03-63CF-4927-B108-1D81AF589B39}|QuanLyThueSach.DAL\\QuanLyThueSach.DAL.csproj|solutionrelative:quanlythuesach.dal\\bandocdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F92452F8-F898-4888-8B65-E4DC96DA4BCC}|QuanLyThueSach.Models\\QuanLyThueSach.Models.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach.models\\taikhoanmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F92452F8-F898-4888-8B65-E4DC96DA4BCC}|QuanLyThueSach.Models\\QuanLyThueSach.Models.csproj|solutionrelative:quanlythuesach.models\\taikhoanmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach\\controllers\\bandoccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|solutionrelative:quanlythuesach\\controllers\\bandoccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F92452F8-F898-4888-8B65-E4DC96DA4BCC}|QuanLyThueSach.Models\\QuanLyThueSach.Models.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach.models\\bandocmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F92452F8-F898-4888-8B65-E4DC96DA4BCC}|QuanLyThueSach.Models\\QuanLyThueSach.Models.csproj|solutionrelative:quanlythuesach.models\\bandocmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB620DEB-A6A9-4137-A887-A5109BA7268A}|QuanLyThueSach.BLL\\QuanLyThueSach.BLL.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach.bll\\bandocbll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EB620DEB-A6A9-4137-A887-A5109BA7268A}|QuanLyThueSach.BLL\\QuanLyThueSach.BLL.csproj|solutionrelative:quanlythuesach.bll\\bandocbll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|solutionrelative:quanlythuesach\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|solutionrelative:quanlythuesach\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach\\weatherforecast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|solutionrelative:quanlythuesach\\weatherforecast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F92452F8-F898-4888-8B65-E4DC96DA4BCC}|QuanLyThueSach.Models\\QuanLyThueSach.Models.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach.models\\respon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F92452F8-F898-4888-8B65-E4DC96DA4BCC}|QuanLyThueSach.Models\\QuanLyThueSach.Models.csproj|solutionrelative:quanlythuesach.models\\respon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|d:\\btl react\\quanlythuesach\\quanlythuesach\\ocelot.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{7F8E1615-E6E8-4907-8626-50CB5B0C5C13}|QuanLyThueSach\\QuanLyThueSach.csproj|solutionrelative:quanlythuesach\\ocelot.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "TaiKhoanDAL.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\TaiKhoanDAL.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach.DAL\\TaiKhoanDAL.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\TaiKhoanDAL.cs",
+              "RelativeToolTip": "QuanLyThueSach.DAL\\TaiKhoanDAL.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAwBYAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-13T04:18:12.935Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TaiKhoanModel.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.Models\\TaiKhoanModel.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach.Models\\TaiKhoanModel.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.Models\\TaiKhoanModel.cs",
+              "RelativeToolTip": "QuanLyThueSach.Models\\TaiKhoanModel.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAwwB0AAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-13T04:04:52.082Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\Program.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach\\Program.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\Program.cs",
+              "RelativeToolTip": "QuanLyThueSach\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-06T09:37:38.395Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "WeatherForecast.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\WeatherForecast.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach\\WeatherForecast.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\WeatherForecast.cs",
+              "RelativeToolTip": "QuanLyThueSach\\WeatherForecast.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-06T09:37:34.776Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Respon.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.Models\\Respon.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach.Models\\Respon.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.Models\\Respon.cs",
+              "RelativeToolTip": "QuanLyThueSach.Models\\Respon.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-06T09:09:55.978Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BanDocDAL.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\BanDocDAL.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach.DAL\\BanDocDAL.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\BanDocDAL.cs",
+              "RelativeToolTip": "QuanLyThueSach.DAL\\BanDocDAL.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABQAAABOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-06T08:05:20.299Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "BanDocBLL.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.BLL\\BanDocBLL.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach.BLL\\BanDocBLL.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.BLL\\BanDocBLL.cs",
+              "RelativeToolTip": "QuanLyThueSach.BLL\\BanDocBLL.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAQwDkAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-06T08:03:19.953Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "BanDocModel.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.Models\\BanDocModel.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach.Models\\BanDocModel.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.Models\\BanDocModel.cs",
+              "RelativeToolTip": "QuanLyThueSach.Models\\BanDocModel.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAEwB0AAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-06T07:58:22.133Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BanDocController.cs",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\Controllers\\BanDocController.cs",
+              "RelativeDocumentMoniker": "QuanLyThueSach\\Controllers\\BanDocController.cs",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\Controllers\\BanDocController.cs",
+              "RelativeToolTip": "QuanLyThueSach\\Controllers\\BanDocController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGMAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-06T07:56:01.427Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\appsettings.json",
+              "RelativeDocumentMoniker": "QuanLyThueSach\\appsettings.json",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\appsettings.json",
+              "RelativeToolTip": "QuanLyThueSach\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-03-06T07:34:59.635Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ocelot.json",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\ocelot.json",
+              "RelativeDocumentMoniker": "QuanLyThueSach\\ocelot.json",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach\\ocelot.json",
+              "RelativeToolTip": "QuanLyThueSach\\ocelot.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-03-06T07:29:29.008Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

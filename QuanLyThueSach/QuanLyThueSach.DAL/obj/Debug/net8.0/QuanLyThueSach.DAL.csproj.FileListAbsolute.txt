@@ -1,0 +1,15 @@
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\bin\Debug\net8.0\QuanLyThueSach.DAL.deps.json
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\bin\Debug\net8.0\QuanLyThueSach.DAL.dll
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\bin\Debug\net8.0\QuanLyThueSach.DAL.pdb
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\bin\Debug\net8.0\QuanLyThueSach.Models.dll
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\bin\Debug\net8.0\QuanLyThueSach.Models.pdb
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.csproj.AssemblyReference.cache
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.AssemblyInfoInputs.cache
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.AssemblyInfo.cs
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.csproj.CoreCompileInputs.cache
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyTh.18E877E8.Up2Date
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.dll
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\refint\QuanLyThueSach.DAL.dll
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.pdb
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\ref\QuanLyThueSach.DAL.dll

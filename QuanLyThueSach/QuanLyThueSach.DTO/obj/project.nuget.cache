@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "EtEaxZWWhe4=",
+  "success": true,
+  "projectFilePath": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DTO\\QuanLyThueSach.DTO.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\phamh\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.24\\microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
+    "C:\\Users\\phamh\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.24\\microsoft.windowsdesktop.app.ref.8.0.24.nupkg.sha512",
+    "C:\\Users\\phamh\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.24\\microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512",
+    "C:\\Users\\phamh\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.24\\microsoft.netcore.app.host.win-x64.8.0.24.nupkg.sha512"
+  ],
+  "logs": []
+}
