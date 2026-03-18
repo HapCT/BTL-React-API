@@ -11,7 +11,8 @@ namespace QuanLyThueSach.Models
         public  string TenTaiKhoan { get; set; } 
         public string MatKhau { get; set; }
         public string VaiTro { get; set; }
-        public string MaBanDoc { get; set; }
+        public string? HoTen { get; set; }
+
     }
     public class DangKyModel
     {

@@ -14,7 +14,7 @@ namespace QuanLyThueSach.BLL
         public interface IBanDocServices
         {
             Task<Respon<List<BanDocModel>>> GetBanDocAsync();
-            Task<BanDocModel> GetBanDocByIdAsync(string maBanDoc);
+            Task<Respon<BanDocModel>> GetBanDocByIdAsync(string maBanDoc);
             Task<List<BanDocModel>> SearchBanDocAsync(string tuKhoa);
             Task<int> CreateAsync(CreateBanDoc createBanDoc);
             Task<int> UpdateAsync(string maBanDoc, UpdateBanDoc updateBanDoc);
@@ -50,9 +50,38 @@ namespace QuanLyThueSach.BLL
                 }
                 
             }
-            public async Task<BanDocModel> GetBanDocByIdAsync(string maBanDoc)
+            public async Task<Respon<BanDocModel>> GetBanDocByIdAsync(string maBanDoc)
             {
-                return await _respository.GetBanDocByIdAsync(maBanDoc);
+                try
+                {
+                    var banDoc = await _respository.GetBanDocByIdAsync(maBanDoc);
+
+                    if (banDoc == null)
+                    {
+                        return new Respon<BanDocModel>
+                        {
+                            StatusCode = 200,
+                            Message = "Không tìm thấy bạn đọc",
+                            Data = null
+                        };
+                    }
+
+                    return new Respon<BanDocModel>
+                    {
+                        StatusCode = 200,
+                        Message = "Lấy thông tin thành công",
+                        Data = banDoc
+                    };
+                }
+                catch (Exception ex)
+                {
+                    return new Respon<BanDocModel>
+                    {
+                        StatusCode = 404,
+                        Message = $"Lỗi: {ex.Message}",
+                        Data = null
+                    };
+                }
             }
             public async Task<List<BanDocModel>> SearchBanDocAsync(string tuKhoa)
             {

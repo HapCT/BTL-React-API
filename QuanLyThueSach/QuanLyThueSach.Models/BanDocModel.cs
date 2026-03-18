@@ -9,12 +9,12 @@ namespace QuanLyThueSach.Models
     public class BanDocModel
     {
         public string MaBanDoc { get; set; }
-        public string SoThe { get; set; }
+        public string? SoThe { get; set; }
         public string HoTen { get; set; }
-        public string Email { get; set; }
-        public string SoDienThoai { get; set; }
-        public DateTime HanThe { get; set; }
-        public string TrangThaiThe { get; set; }
+        public string? SoDienThoai { get; set; }
+        public string? Email { get; set; }
+        public DateTime? HanThe { get; set; }
+        public string? TrangThaiThe { get; set; }
         public decimal DuNo { get; set; }
         public string CCCD { get; set; }
     }

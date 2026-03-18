@@ -51,7 +51,7 @@ namespace QuanLyThueSach.Controllers
             try
             {
                 var banDoc = await _banDocService.SearchBanDocAsync(tuKhoa);
-                if (banDoc == null)
+                if (banDoc.Count == 0)
                 {
                     return NotFound("Không tìm thấy bạn đọc với thông tin đã cung cấp");
                 }
@@ -79,7 +79,7 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, UpdateBanDoc updateBanDoc)
         {
             try

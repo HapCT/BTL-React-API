@@ -41,14 +41,14 @@ namespace QuanLyThueSach.DAL
                     list.Add(new BanDocModel
                     {
                         MaBanDoc = rd.GetString(0),
-                        SoThe = rd.GetString(1),
-                        HoTen = rd.GetString(2),
-                        Email = rd.GetString(3),
-                        SoDienThoai = rd.GetString(4),
-                        HanThe = rd.GetDateTime(5),
-                        TrangThaiThe = rd.GetString(6),
-                        DuNo = rd.GetDecimal(7),
-                        CCCD = rd.GetString(8)
+                        SoThe = rd.IsDBNull(1) ? null : rd.GetString(1),
+                        HoTen = rd.IsDBNull(2) ? null : rd.GetString(2),
+                        SoDienThoai = rd.IsDBNull(3) ? null : rd.GetString(3),
+                        Email = rd.IsDBNull(4) ? null : rd.GetString(4),
+                        HanThe = rd.IsDBNull(5) ? (DateTime?)null : rd.GetDateTime(5),
+                        TrangThaiThe = rd.IsDBNull(6) ? null : rd.GetString(6),
+                        DuNo = rd.IsDBNull(7) ? 0 : rd.GetDecimal(7),
+                        CCCD = rd.IsDBNull(8) ? null : rd.GetString(8)
                     });
                 }
                 return list;
@@ -58,25 +58,29 @@ namespace QuanLyThueSach.DAL
             {
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
+
                 using var cmd = new SqlCommand("sp_TimBanDocTheoID", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@MaBanDoc", maBanDoc);
+
                 using var rd = await cmd.ExecuteReaderAsync();
+
                 if (await rd.ReadAsync())
                 {
                     return new BanDocModel
                     {
                         MaBanDoc = rd.GetString(0),
-                        SoThe = rd.GetString(1),
-                        HoTen = rd.GetString(2),
-                        Email = rd.GetString(3),
-                        SoDienThoai = rd.GetString(4),
-                        HanThe = rd.GetDateTime(5),
-                        TrangThaiThe = rd.GetString(6),
-                        DuNo = rd.GetDecimal(7),
-                        CCCD = rd.GetString(8)
+                        SoThe = rd.IsDBNull(1) ? null : rd.GetString(1),
+                        HoTen = rd.IsDBNull(2) ? null : rd.GetString(2),
+                        SoDienThoai = rd.IsDBNull(3) ? null : rd.GetString(3),
+                        Email = rd.IsDBNull(4) ? null : rd.GetString(4),
+                        HanThe = rd.IsDBNull(5) ? (DateTime?)null : rd.GetDateTime(5),
+                        TrangThaiThe = rd.IsDBNull(6) ? null : rd.GetString(6),
+                        DuNo = rd.IsDBNull(7) ? 0 : rd.GetDecimal(7),
+                        CCCD = rd.IsDBNull(8) ? null : rd.GetString(8)
                     };
                 }
+
                 return null;
             }
             public async Task<List<BanDocModel>> SearchBanDocAsync(string tuKhoa)
@@ -98,14 +102,14 @@ namespace QuanLyThueSach.DAL
                     list.Add(new BanDocModel
                     {
                         MaBanDoc = rd.GetString(0),
-                        SoThe = rd.GetString(1),
-                        HoTen = rd.GetString(2),
-                        Email = rd.GetString(3),
-                        SoDienThoai = rd.GetString(4),
-                        HanThe = rd.GetDateTime(5),
-                        TrangThaiThe = rd.GetString(6),
-                        DuNo = rd.GetDecimal(7),
-                        CCCD = rd.GetString(8)
+                        SoThe = rd.IsDBNull(1) ? null : rd.GetString(1),
+                        HoTen = rd.IsDBNull(2) ? null : rd.GetString(2),
+                        SoDienThoai = rd.IsDBNull(3) ? null : rd.GetString(3),
+                        Email = rd.IsDBNull(4) ? null : rd.GetString(4),
+                        HanThe = rd.IsDBNull(5) ? (DateTime?)null : rd.GetDateTime(5),
+                        TrangThaiThe = rd.IsDBNull(6) ? null : rd.GetString(6),
+                        DuNo = rd.IsDBNull(7) ? 0 : rd.GetDecimal(7),
+                        CCCD = rd.IsDBNull(8) ? null : rd.GetString(8)
                     });
                 }
 

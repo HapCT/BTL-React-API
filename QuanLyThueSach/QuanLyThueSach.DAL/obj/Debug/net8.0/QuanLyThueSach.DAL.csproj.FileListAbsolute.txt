@@ -13,3 +13,4 @@ D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.D
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\refint\QuanLyThueSach.DAL.dll
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.pdb
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\ref\QuanLyThueSach.DAL.dll
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.DAL\obj\Debug\net8.0\QuanLyThueSach.DAL.sourcelink.json

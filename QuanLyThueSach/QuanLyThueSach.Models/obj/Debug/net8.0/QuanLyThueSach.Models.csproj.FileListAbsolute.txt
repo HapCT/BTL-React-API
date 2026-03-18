@@ -10,3 +10,4 @@ D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\refint\QuanLy
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.pdb
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\ref\QuanLyThueSach.Models.dll
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.csproj.AssemblyReference.cache
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.sourcelink.json

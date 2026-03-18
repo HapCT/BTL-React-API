@@ -27,27 +27,6 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.BanDocController",
-    "Method": "Update",
-    "RelativePath": "api/BanDoc",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "updateBanDoc",
-        "Type": "QuanLyThueSach.Models.UpdateBanDoc",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "QuanLyThueSach.Controllers.BanDocController",
     "Method": "GetById",
     "RelativePath": "api/BanDoc/{id}",
     "HttpMethod": "GET",
@@ -57,6 +36,27 @@
       {
         "Name": "id",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.BanDocController",
+    "Method": "Update",
+    "RelativePath": "api/BanDoc/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "updateBanDoc",
+        "Type": "QuanLyThueSach.Models.UpdateBanDoc",
         "IsRequired": true
       }
     ],
@@ -88,6 +88,465 @@
     "Parameters": [
       {
         "Name": "tuKhoa",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.BanSaoController",
+    "Method": "GetAll",
+    "RelativePath": "api/BanSao",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.BanSaoController",
+    "Method": "ThemBanSao",
+    "RelativePath": "api/BanSao",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "banSao",
+        "Type": "QuanLyThueSach.Models.ThemBanSao",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.BanSaoController",
+    "Method": "GetBanSaoID",
+    "RelativePath": "api/BanSao/{maBanSao}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maBanSao",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.BanSaoController",
+    "Method": "SuaBanSao",
+    "RelativePath": "api/BanSao/{maBanSao}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maBanSao",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "banSao",
+        "Type": "QuanLyThueSach.Models.SuaBanSao",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.BanSaoController",
+    "Method": "XoaBanSao",
+    "RelativePath": "api/BanSao/{maBanSao}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maBanSao",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.BanSaoController",
+    "Method": "Search",
+    "RelativePath": "api/BanSao/search/{tuKhoa}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tuKhoa",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
+    "Method": "GetAll",
+    "RelativePath": "api/KeSach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
+    "Method": "ThemKe",
+    "RelativePath": "api/KeSach",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keSach",
+        "Type": "QuanLyThueSach.Models.ThemKeSach",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
+    "Method": "GetKeById",
+    "RelativePath": "api/KeSach/{maKe}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maKe",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
+    "Method": "SuaKe",
+    "RelativePath": "api/KeSach/{maKe}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maKe",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "keSach",
+        "Type": "QuanLyThueSach.Models.SuaKeSach",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
+    "Method": "XoaKe",
+    "RelativePath": "api/KeSach/{maKe}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maKe",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
+    "Method": "Search",
+    "RelativePath": "api/KeSach/search/{tuKhoa}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tuKhoa",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.SachController",
+    "Method": "GetAll",
+    "RelativePath": "api/Sach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.SachController",
+    "Method": "ThemSach",
+    "RelativePath": "api/Sach",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sach",
+        "Type": "QuanLyThueSach.Models.ThemSach",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.SachController",
+    "Method": "GetSachId",
+    "RelativePath": "api/Sach/{masach}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "masach",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.SachController",
+    "Method": "SuaSach",
+    "RelativePath": "api/Sach/{masach}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "masach",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sach",
+        "Type": "QuanLyThueSach.Models.SuaSach",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.SachController",
+    "Method": "XoaSach",
+    "RelativePath": "api/Sach/{masach}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "masach",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.SachController",
+    "Method": "TimSach",
+    "RelativePath": "api/Sach/search/{tukhoa}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tukhoa",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "GetAll",
+    "RelativePath": "api/TaiKhoan",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "DangKy",
+    "RelativePath": "api/TaiKhoan",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dangky",
+        "Type": "QuanLyThueSach.Models.DangKyModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "GetTaiKhoanId",
+    "RelativePath": "api/TaiKhoan/{tentaikhoan}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tentaikhoan",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "DoiMatKhau",
+    "RelativePath": "api/TaiKhoan/{TenTaiKhoan}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "doiMatKhau",
+        "Type": "QuanLyThueSach.Models.DoiMatKhauModel",
+        "IsRequired": true
+      },
+      {
+        "Name": "TenTaiKhoan",
+        "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "XoaTaiKhoan",
+    "RelativePath": "api/TaiKhoan/{TenTaiKhoan}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "TenTaiKhoan",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TheLoaiController",
+    "Method": "GetAll",
+    "RelativePath": "api/TheLoai",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TheLoaiController",
+    "Method": "ThemTL",
+    "RelativePath": "api/TheLoai",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "theLoai",
+        "Type": "QuanLyThueSach.Models.ThemTheLoai",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TheLoaiController",
+    "Method": "XoaTL",
+    "RelativePath": "api/TheLoai/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TheLoaiController",
+    "Method": "TimTLid",
+    "RelativePath": "api/TheLoai/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TheLoaiController",
+    "Method": "SuaTL",
+    "RelativePath": "api/TheLoai/{maTheLoai}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maTheLoai",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "theLoai",
+        "Type": "QuanLyThueSach.Models.SuaTheLoai",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TheLoaiController",
+    "Method": "TimTL",
+    "RelativePath": "api/TheLoai/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tukhoa",
         "Type": "System.String",
         "IsRequired": false
       }
