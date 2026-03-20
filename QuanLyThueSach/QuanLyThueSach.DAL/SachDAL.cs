@@ -70,6 +70,7 @@ namespace QuanLyThueSach.DAL
                 cmd.Parameters.AddWithValue("@NamXB", themSach.NamXB);
                 cmd.Parameters.AddWithValue("@NgonNgu", themSach.NgonNgu);
                 cmd.Parameters.AddWithValue("@SoLuongSach", themSach.SoLuongSach);
+                cmd.Parameters.AddWithValue("@HinhAnh", themSach.HinhAnh);
 
                 return await cmd.ExecuteNonQueryAsync();
             }
@@ -89,6 +90,7 @@ namespace QuanLyThueSach.DAL
                 cmd.Parameters.AddWithValue("@NamXB", suaSach.NamXB);
                 cmd.Parameters.AddWithValue("@NgonNgu", suaSach.NgonNgu);
                 cmd.Parameters.AddWithValue("@SoLuongSach", suaSach.SoLuongSach);
+                cmd.Parameters.AddWithValue("@HinhAnh", suaSach.HinhAnh);
 
                 return await cmd.ExecuteNonQueryAsync();
             }

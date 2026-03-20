@@ -48,11 +48,35 @@ namespace QuanLyThueSach.Controllers
 
         // Thêm sách
         [HttpPost]
-        public async Task<IActionResult> ThemSach(ThemSach sach)
+        public async Task<IActionResult> ThemSach([FromForm] ThemSachRequest model)
         {
             try
             {
-                var response = await _SachService.ThemSachAsync(sach);
+                string fileName = null;
+
+                if (model.HinhAnh != null)
+                {
+                    fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.HinhAnh.FileName);
+
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+
+                    using var stream = new FileStream(path, FileMode.Create);
+                    await model.HinhAnh.CopyToAsync(stream);
+                }
+
+                string url = "/images/" + fileName;
+
+                var response = await _SachService.ThemSachAsync(new ThemSach
+                {
+                    MaTheLoai = model.MaTheLoai,
+                    TieuDe = model.TieuDe,
+                    TacGia = model.TacGia,
+                    NamXB = model.NamXB,
+                    NgonNgu = model.NgonNgu,
+                    SoLuongSach = model.SoLuongSach,
+                    HinhAnh = url
+                });
+
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)

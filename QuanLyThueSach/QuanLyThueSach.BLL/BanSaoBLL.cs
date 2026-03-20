@@ -11,7 +11,7 @@ namespace QuanLyThueSach.BLL
             Task<Respon<List<BanSaoModel>>> TimBanSaoIDAsync(string maBanSao);
             Task<Respon<List<BanSaoModel>>> SearchAsync(string tuKhoa);
             Task<Respon<int>> SuaBanSaoAsync(string maBanSao, SuaBanSao suaBanSao);
-            Task<Respon<int>> XoaBanSaoAsync(string maBanSao);
+            Task<Respon<int>> XoaNhieuAsync(List<string> dsMaBanSao);
         }
 
         public class BanSaoService : IBanSaoServices
@@ -149,11 +149,11 @@ namespace QuanLyThueSach.BLL
             }
 
             // Xóa bản sao
-            public async Task<Respon<int>> XoaBanSaoAsync(string maBanSao)
+            public async Task<Respon<int>> XoaNhieuAsync(List<string> dsMaBanSao)
             {
                 try
                 {
-                    var result = await _repository.XoaBanSaoAsync(maBanSao);
+                    var result = await _repository.XoaNhieuAsync(dsMaBanSao);
 
                     return new Respon<int>
                     {

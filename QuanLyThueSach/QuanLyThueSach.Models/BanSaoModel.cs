@@ -26,4 +26,8 @@ namespace QuanLyThueSach.Models
         public string MaKe { get; set; }
         public string TrangThai { get; set; }
     }
+    public class XoaNhieuBanSao
+    {
+        public List<string> DanhSachMaBanSao { get; set; }
+    }
 }

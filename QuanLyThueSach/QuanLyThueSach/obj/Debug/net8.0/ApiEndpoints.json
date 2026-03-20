@@ -190,6 +190,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "QuanLyThueSach.Controllers.BanSaoController",
+    "Method": "XoaNhieu",
+    "RelativePath": "api/BanSao/xoa-nhieu",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.XoaNhieuBanSao",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
     "Method": "GetAll",
     "RelativePath": "api/KeSach",
@@ -278,6 +294,133 @@
     "Parameters": [
       {
         "Name": "tuKhoa",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "GetAll",
+    "RelativePath": "api/PhieuMuon",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "GetByBanDoc",
+    "RelativePath": "api/PhieuMuon/{maBanDoc}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maBanDoc",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "XoaPhieuMuon",
+    "RelativePath": "api/PhieuMuon/{maPhieuMuon}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhieuMuon",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "DangKyMuon",
+    "RelativePath": "api/PhieuMuon/dang-ky",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "QuanLyThueSach.Models.MuonOline",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "DuyetMuon",
+    "RelativePath": "api/PhieuMuon/duyet/{maPhieuMuon}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhieuMuon",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "GiaHan",
+    "RelativePath": "api/PhieuMuon/gia-han/{maPhieuMuon}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhieuMuon",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "soNgayThem",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "Huy",
+    "RelativePath": "api/PhieuMuon/huy/{maPhieuMuon}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhieuMuon",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "TraSach",
+    "RelativePath": "api/PhieuMuon/tra/{maPhieuMuon}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhieuMuon",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -423,27 +566,6 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
-    "Method": "DoiMatKhau",
-    "RelativePath": "api/TaiKhoan/{TenTaiKhoan}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "doiMatKhau",
-        "Type": "QuanLyThueSach.Models.DoiMatKhauModel",
-        "IsRequired": true
-      },
-      {
-        "Name": "TenTaiKhoan",
-        "Type": "",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
     "Method": "XoaTaiKhoan",
     "RelativePath": "api/TaiKhoan/{TenTaiKhoan}",
     "HttpMethod": "DELETE",
@@ -453,6 +575,53 @@
       {
         "Name": "TenTaiKhoan",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "DangNhapAsync",
+    "RelativePath": "api/TaiKhoan/dang-nhap",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "QuanLyThueSach.Models.DangNhapModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "QuanLyThueSach.Models.Respon\u00601[[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "DoiMatKhau",
+    "RelativePath": "api/TaiKhoan/doi-mat-khau/{TenTaiKhoan}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "TenTaiKhoan",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "QuanLyThueSach.Models.DoiMatKhauModel",
         "IsRequired": true
       }
     ],

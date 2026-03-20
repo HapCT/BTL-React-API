@@ -16,4 +16,8 @@
     <ProjectReference Include="..\QuanLyThueSach.Models\QuanLyThueSach.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 </Project>

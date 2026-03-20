@@ -50,4 +50,3 @@ D:\BTL React\QuanLyThueSach\QuanLyThueSach\obj\Debug\net8.0\ref\QuanLyThueSach.d
 D:\BTL React\QuanLyThueSach\QuanLyThueSach\bin\Debug\net8.0\Microsoft.Extensions.Configuration.dll
 D:\BTL React\QuanLyThueSach\QuanLyThueSach\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Abstractions.dll
 D:\BTL React\QuanLyThueSach\QuanLyThueSach\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
-D:\BTL React\QuanLyThueSach\QuanLyThueSach\obj\Debug\net8.0\QuanLyThueSach.sourcelink.json

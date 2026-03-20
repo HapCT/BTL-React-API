@@ -48,8 +48,10 @@ CREATE TABLE Sach
 	NamXB NVARCHAR(10),
 	NgonNgu NVARCHAR(20),
 	SoLuongSach INT,
+	HinhAnh NVARCHAR(255),
 	FOREIGN KEY (MaTheLoai) REFERENCES TheLoai(MaTheLoai)
 )	
+
 GO 
 CREATE TABLE KeSach
 (
@@ -74,24 +76,25 @@ CREATE TABLE PhieuMuon
 (
 	MaPhieuMuon NVARCHAR(20) PRIMARY KEY,
 	MaBanDoc NVARCHAR(20),
+	MaBanSao NVARCHAR(20), -- thêm lại
 	NgayMuon DATE, 
 	HanTra DATE, 
-	NgayTra DATE, 
 	SoLanGiaHan INT, 
 	TrangThai NVARCHAR(20),
-	CHECK (TrangThai IN (N'Đăng ký mượn', N'Đã nhận sách', N'Đã trả', N'Quá hạn', N'Huỷ')),
-	FOREIGN KEY (MaBanDoc) REFERENCES BanDoc(MaBanDoc)
-)
-GO
-CREATE TABLE ChiTietPhieuMuon
-(
-	MaChiTietMuon NVARCHAR(20) PRIMARY KEY,
-	MaPhieuMuon NVARCHAR(20),
-	MaBanSao NVARCHAR(20),
-	NgayTra DATE,
-	FOREIGN KEY (MaPhieuMuon) REFERENCES PhieuMuon(MaPhieuMuon),
+
+	CHECK (TrangThai IN (
+		N'Đăng ký mượn',
+		N'Đã nhận sách',
+		N'Đã trả',
+		N'Quá hạn',
+		N'Huỷ'
+	)),
+
+	FOREIGN KEY (MaBanDoc) REFERENCES BanDoc(MaBanDoc),
 	FOREIGN KEY (MaBanSao) REFERENCES BanSao(MaBanSao)
 )
+GO
+
 GO
 CREATE TABLE DatCho
 (
@@ -99,9 +102,12 @@ CREATE TABLE DatCho
 	MaSach NVARCHAR(20),
 	MaBanDoc NVARCHAR(20),
 	ThoiGianGiuCho DATE,
+	TrangThai NVARCHAR(20) DEFAULT N'Đang chờ',
+	ThuTu INT,
 	FOREIGN KEY (MaSach) REFERENCES Sach(MaSach),
 	FOREIGN KEY (MaBanDoc) REFERENCES BanDoc(MaBanDoc)
 )
+
 GO
 CREATE TABLE Phat
 (

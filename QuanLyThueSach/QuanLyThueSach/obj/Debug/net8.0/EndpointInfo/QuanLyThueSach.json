@@ -292,6 +292,37 @@
         }
       }
     },
+    "/api/BanSao/xoa-nhieu": {
+      "delete": {
+        "tags": [
+          "BanSao"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/XoaNhieuBanSao"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/XoaNhieuBanSao"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/XoaNhieuBanSao"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/KeSach": {
       "get": {
         "tags": [
@@ -422,6 +453,203 @@
         "parameters": [
           {
             "name": "tuKhoa",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon": {
+      "get": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon/{maBanDoc}": {
+      "get": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "parameters": [
+          {
+            "name": "maBanDoc",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon/dang-ky": {
+      "post": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MuonOline"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MuonOline"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MuonOline"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon/duyet/{maPhieuMuon}": {
+      "put": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "parameters": [
+          {
+            "name": "maPhieuMuon",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon/tra/{maPhieuMuon}": {
+      "put": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "parameters": [
+          {
+            "name": "maPhieuMuon",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon/gia-han/{maPhieuMuon}": {
+      "put": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "parameters": [
+          {
+            "name": "maPhieuMuon",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon/huy/{maPhieuMuon}": {
+      "put": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "parameters": [
+          {
+            "name": "maPhieuMuon",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhieuMuon/{maPhieuMuon}": {
+      "delete": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "parameters": [
+          {
+            "name": "maPhieuMuon",
             "in": "path",
             "required": true,
             "schema": {
@@ -643,7 +871,7 @@
         }
       }
     },
-    "/api/TaiKhoan/{TenTaiKhoan}": {
+    "/api/TaiKhoan/doi-mat-khau/{TenTaiKhoan}": {
       "put": {
         "tags": [
           "TaiKhoan"
@@ -682,7 +910,9 @@
             "description": "OK"
           }
         }
-      },
+      }
+    },
+    "/api/TaiKhoan/{TenTaiKhoan}": {
       "delete": {
         "tags": [
           "TaiKhoan"
@@ -700,6 +930,54 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/TaiKhoan/dang-nhap": {
+      "post": {
+        "tags": [
+          "TaiKhoan"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DangNhapModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DangNhapModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DangNhapModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectRespon"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectRespon"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectRespon"
+                }
+              }
+            }
           }
         }
       }
@@ -947,6 +1225,20 @@
         },
         "additionalProperties": false
       },
+      "DangNhapModel": {
+        "type": "object",
+        "properties": {
+          "tenTaiKhoan": {
+            "type": "string",
+            "nullable": true
+          },
+          "matKhau": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DoiMatKhauModel": {
         "type": "object",
         "properties": {
@@ -960,6 +1252,41 @@
           },
           "matKhauMoi": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MuonOline": {
+        "type": "object",
+        "properties": {
+          "maBanDoc": {
+            "type": "string",
+            "nullable": true
+          },
+          "maBanSao": {
+            "type": "string",
+            "nullable": true
+          },
+          "hanTra": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ObjectRespon": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
             "nullable": true
           }
         },
@@ -1165,6 +1492,19 @@
           },
           "summary": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "XoaNhieuBanSao": {
+        "type": "object",
+        "properties": {
+          "danhSachMaBanSao": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           }
         },

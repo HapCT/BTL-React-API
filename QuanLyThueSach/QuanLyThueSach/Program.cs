@@ -28,7 +28,9 @@ builder.Services.AddScoped<IKeSachServices, KeSachService>();
 //Bản sao
 builder.Services.AddScoped<IBanSaoRepository, BanSaoRepository>();
 builder.Services.AddScoped<IBanSaoServices, BanSaoService>();
-
+//Phiếu mượn
+builder.Services.AddScoped<PhieuMuonBLL.IPhieuMuonServices, PhieuMuonBLL.PhieuMuonService>();
+builder.Services.AddScoped<PhieuMuonDAL.IPhieuMuonRepository, PhieuMuonDAL.PhieuMuonRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -39,7 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

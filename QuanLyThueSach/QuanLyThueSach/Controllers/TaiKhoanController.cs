@@ -54,12 +54,17 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpPut("{TenTaiKhoan}")]
-        public async Task<IActionResult> DoiMatKhau(DoiMatKhauModel doiMatKhau)
+        [HttpPut("doi-mat-khau/{TenTaiKhoan}")]
+        public async Task<IActionResult> DoiMatKhau(string TenTaiKhoan, DoiMatKhauModel model)
         {
             try
             {
-                var response = await _TaiKhoanService.DoiMatKhauAsync(doiMatKhau.TenTaiKhoan, doiMatKhau.MatKhauCu, doiMatKhau.MatKhauMoi);
+                var response = await _TaiKhoanService.DoiMatKhauAsync(
+                    TenTaiKhoan,
+                    model.MatKhauCu,
+                    model.MatKhauMoi
+                );
+
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)
@@ -80,5 +85,31 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpPost("dang-nhap")]
+        public async Task<Respon<object>> DangNhapAsync(DangNhapModel model)
+        {
+            var user = await _TaiKhoanService.DangNhapAsync(
+                model.TenTaiKhoan,
+                model.MatKhau
+                );
+
+            if (user == null)
+            {
+                return new Respon<object>
+                {
+                    StatusCode = 401,
+                    Message = "Sai tài khoản hoặc mật khẩu"
+                };
+            }
+
+            return new Respon<object>
+            {
+                StatusCode = 200,
+                Message = "Đăng nhập thành công",
+                Data = user
+            };
+        }
+
+
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Http;
 namespace QuanLyThueSach.Models
 {
     public class SachModel
@@ -16,6 +16,7 @@ namespace QuanLyThueSach.Models
         public string NamXB { get; set; }
         public string NgonNgu { get; set; }
         public int SoLuongSach { get; set; }
+        public string HinhAnh { get; set; }
     }
     public class ThemSach
     {
@@ -25,6 +26,7 @@ namespace QuanLyThueSach.Models
         public string NamXB { get; set; }
         public string NgonNgu { get; set; }
         public int SoLuongSach { get; set; }
+        public string HinhAnh { get; set; }
     }
     public class SuaSach
     {
@@ -34,5 +36,6 @@ namespace QuanLyThueSach.Models
         public string NamXB { get; set; }
         public string NgonNgu { get; set; }
         public int SoLuongSach { get; set; }
+        public string HinhAnh { get; set; }
     }
 }

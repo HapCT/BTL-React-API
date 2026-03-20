@@ -90,14 +90,37 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-        // Xóa bản sao
+        //Xoá 1 bản sao
         [HttpDelete("{maBanSao}")]
         public async Task<IActionResult> XoaBanSao(string maBanSao)
         {
             try
             {
-                var response = await _banSaoService.XoaBanSaoAsync(maBanSao);
+                if (string.IsNullOrEmpty(maBanSao))
+                {
+                    return BadRequest("Mã bản sao không hợp lệ");
+                }
+
+                var response = await _banSaoService.XoaNhieuAsync(new List<string> { maBanSao });
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        // Xóa nhiều bản sao
+        [HttpDelete("xoa-nhieu")]
+        public async Task<IActionResult> XoaNhieu([FromBody] XoaNhieuBanSao request)
+        {
+            try
+            {
+                if (request == null || request.DanhSachMaBanSao == null || !request.DanhSachMaBanSao.Any())
+                {
+                    return BadRequest("Danh sách mã bản sao không hợp lệ");
+                }
+
+                var response = await _banSaoService.XoaNhieuAsync(request.DanhSachMaBanSao);
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)

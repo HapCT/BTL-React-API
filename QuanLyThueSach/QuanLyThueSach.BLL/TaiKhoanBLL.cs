@@ -169,7 +169,7 @@ namespace QuanLyThueSach.BLL
                     {
                         StatusCode = 500,
                         Message = $"Lỗi: {ex.Message}",
-                        Data = null
+                        Data = 0
                     };
                 }
             }
@@ -192,7 +192,7 @@ namespace QuanLyThueSach.BLL
                     {
                         StatusCode = 500,
                         Message = $"Lỗi: {ex.Message}",
-                        Data = null
+                        Data = 0
                     };
                 }
             }

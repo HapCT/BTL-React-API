@@ -2,6 +2,7 @@
 using QuanLyThueSach.Models;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 
 namespace QuanLyThueSach.DAL
 {
@@ -14,7 +15,7 @@ namespace QuanLyThueSach.DAL
             Task<List<BanSaoModel>> TimBanSaoIDAsync(string maBanSao);
             Task<List<BanSaoModel>> SearchAsync(string tuKhoa);
             Task<int> SuaBanSaoAsync(string maBanSao, SuaBanSao suaBanSao);
-            Task<int> XoaBanSaoAsync(string maBanSao);
+            Task<int> XoaNhieuAsync(List<string> dsMaBanSao);
         }
 
         public class BanSaoRepository : IBanSaoRepository
@@ -140,8 +141,7 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_SuaBanSao", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@MaBanSao", maBanSao);
+                cmd.Parameters.AddWithValue("@MaBanSao", maBanSao); 
                 cmd.Parameters.AddWithValue("@MaSach", suaBanSao.MaSach);
                 cmd.Parameters.AddWithValue("@MaKe", suaBanSao.MaKe);
                 cmd.Parameters.AddWithValue("@TrangThai", suaBanSao.TrangThai);
@@ -150,17 +150,37 @@ namespace QuanLyThueSach.DAL
             }
 
             // Xóa bản sao
-            public async Task<int> XoaBanSaoAsync(string maBanSao)
+            public async Task<int> XoaNhieuAsync(List<string> dsMaBanSao)
             {
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
 
-                using var cmd = new SqlCommand("sp_XoaBanSao", connect);
+                DataTable table = new DataTable();
+                table.Columns.Add("MaBanSao", typeof(string));
+
+                foreach (var item in dsMaBanSao)
+                {
+                    Console.WriteLine("Add: " + item);
+                    table.Rows.Add(item);
+                }
+
+                Console.WriteLine("Total rows: " + table.Rows.Count);
+
+                using var cmd = new SqlCommand("sp_XoaNhieuBanSao", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@MaBanSao", maBanSao);
+                var param = new SqlParameter("@DanhSachID", SqlDbType.Structured)
+                {
+                    TypeName = "BanSaoIDList",
+                    Value = table
+                };
 
-                return await cmd.ExecuteNonQueryAsync();
+                cmd.Parameters.Add(param);
+
+                var result = await cmd.ExecuteNonQueryAsync();
+                Console.WriteLine("Rows affected: " + result);
+
+                return result;
             }
         }
     }

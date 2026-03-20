@@ -509,7 +509,8 @@ BEGIN
 	s.TacGia,
 	s.NamXB,
 	s.NgonNgu,
-	s.SoLuongSach
+	s.SoLuongSach,
+	s.HinhAnh
 	FROM Sach s 
 	LEFT JOIN TheLoai tl ON s.MaTheLoai = tl.MaTheLoai
 END
@@ -521,7 +522,8 @@ CREATE OR ALTER PROCEDURE sp_ThemSach
 	@TacGia NVARCHAR(20),
 	@NamXB NVARCHAR(10),
 	@NgonNgu NVARCHAR(20),
-	@SoLuongSach INT
+	@SoLuongSach INT,
+	@HinhAnh NVARCHAR(255)
 AS
 BEGIN
 
@@ -557,7 +559,8 @@ BEGIN
 		MaTheLoai,
 		NamXB,
 		NgonNgu,
-		SoLuongSach
+		SoLuongSach,
+		HinhAnh
 	)
 	VALUES
 	(
@@ -567,7 +570,8 @@ BEGIN
 		@MaTheLoai,
 		@NamXB,
 		@NgonNgu,
-		@SoLuongSach
+		@SoLuongSach,
+		@HinhAnh
 	)
 
 END
@@ -581,7 +585,8 @@ CREATE OR ALTER PROCEDURE sp_SuaSach
 	@TacGia NVARCHAR(20),
 	@NamXB NVARCHAR(10),
 	@NgonNgu NVARCHAR(20),
-	@SoLuongSach INT
+	@SoLuongSach INT,
+	@HinhAnh NVARCHAR(255)
 AS
 BEGIN
 
@@ -605,7 +610,8 @@ BEGIN
 		MaTheLoai = @MaTheLoai,
 		NamXB = @NamXB,
 		NgonNgu = @NgonNgu,
-		SoLuongSach = @SoLuongSach
+		SoLuongSach = @SoLuongSach,
+		HinhAnh = @HinhAnh
 	WHERE MaSach = @MaSach
 
 END
@@ -931,10 +937,463 @@ BEGIN
 	WHERE MaBanSao = @MaBanSao
 END
 -- Xoá bản sao
-CREATE PROCEDURE sp_XoaBanSao
-	@MaBanSao NVARCHAR(20)
+CREATE TYPE BanSaoIDList AS TABLE
+(
+    MaBanSao NVARCHAR(20)
+)
+CREATE PROCEDURE sp_XoaNhieuBanSao
+    @DanhSachID BanSaoIDList READONLY
 AS
 BEGIN
-	DELETE FROM BanSao
-	WHERE MaBanSao = @MaBanSao
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1 
+        FROM BanSao bs
+        JOIN @DanhSachID ds ON bs.MaBanSao = ds.MaBanSao
+        WHERE bs.TrangThai = N'Đang mượn'
+    )
+    BEGIN
+        RAISERROR(N'Có bản sao đang được mượn, không thể xoá!', 16, 1)
+        RETURN
+    END
+
+
+    IF EXISTS (
+        SELECT 1
+        FROM ChiTietPhieuMuon ct
+        JOIN @DanhSachID ds ON ct.MaBanSao = ds.MaBanSao
+        WHERE ct.NgayTra IS NULL
+    )
+    BEGIN
+        RAISERROR(N'Có bản sao chưa trả, không thể xoá!', 16, 1)
+        RETURN
+    END
+
+    DELETE FROM BanSao
+    WHERE MaBanSao IN (SELECT MaBanSao FROM @DanhSachID)
+
+END
+
+--Trigger 
+CREATE TRIGGER trg_UpdateSoLuong
+ON BanSao
+AFTER INSERT, DELETE
+AS
+BEGIN
+    UPDATE Sach
+    SET SoLuongSach = (
+        SELECT COUNT(*) 
+        FROM BanSao 
+        WHERE BanSao.MaSach = Sach.MaSach
+    )
+END
+
+-- Phiếu mượn
+-- Đăng ký mượn online
+CREATE PROCEDURE sp_DangKyMuon
+    @MaBanDoc NVARCHAR(20),
+    @MaBanSao NVARCHAR(20),
+    @HanTra DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @MaPhieuMuon NVARCHAR(20)
+
+    BEGIN TRAN
+
+    -- Tạo mã
+    SELECT @MaPhieuMuon =
+        'PM' + RIGHT('000' +
+        CAST(ISNULL(MAX(CAST(SUBSTRING(MaPhieuMuon,3,10) AS INT)),0) + 1 AS NVARCHAR),3)
+    FROM PhieuMuon WITH (UPDLOCK, HOLDLOCK)
+
+    -- kiểm tra sách còn
+    IF EXISTS (
+        SELECT 1 FROM BanSao WITH (UPDLOCK, HOLDLOCK)
+        WHERE MaBanSao = @MaBanSao
+        AND TrangThai = N'Trong kho'
+    )
+    BEGIN
+        INSERT INTO PhieuMuon
+        VALUES
+        (
+            @MaPhieuMuon,
+            @MaBanDoc,
+            @MaBanSao,
+            NULL,               -- Ngày mượn
+            @HanTra,
+            0,
+            N'Đăng ký mượn'     -- trạng thái chờ duyệt
+        )
+
+        COMMIT TRAN
+    END
+    ELSE
+    BEGIN
+        ROLLBACK TRAN
+        RAISERROR(N'Sách không khả dụng',16,1)
+    END
+END
+
+
+-- Xem phiếu mượn theo id 
+CREATE PROCEDURE sp_XemPhieuMuon
+    @MaBanDoc NVARCHAR(20)
+AS
+BEGIN
+    SELECT *
+    FROM PhieuMuon
+    WHERE MaBanDoc = @MaBanDoc
+END
+--Hiển thị 
+CREATE PROCEDURE sp_HienThiPhieuMuon
+AS
+BEGIN
+	SELECT 
+		pm.MaPhieuMuon,
+		bd.HoTen AS TenBanDoc,
+		s.TieuDe,
+		pm.NgayMuon,
+		pm.HanTra,
+		pm.TrangThai
+	FROM PhieuMuon pm
+	JOIN BanDoc bd ON pm.MaBanDoc = bd.MaBanDoc
+	JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+	JOIN Sach s ON bs.MaSach = s.MaSach
+END
+
+--Duyệt mượn 
+CREATE PROCEDURE sp_DuyetMuon
+    @MaPhieuMuon NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- kiểm tra phiếu hợp lệ
+        IF NOT EXISTS (
+            SELECT 1 
+            FROM PhieuMuon
+            WHERE MaPhieuMuon = @MaPhieuMuon
+            AND TrangThai = N'Đăng ký mượn'
+        )
+        BEGIN
+            RAISERROR(N'Phiếu không hợp lệ hoặc đã được xử lý',16,1);
+            ROLLBACK TRAN;
+            RETURN;
+        END
+
+        -- cập nhật phiếu mượn
+        UPDATE PhieuMuon
+        SET 
+            NgayMuon = GETDATE(),
+            TrangThai = N'Đã nhận sách'
+        WHERE MaPhieuMuon = @MaPhieuMuon;
+
+        -- cập nhật bản sao (JOIN cho chắc)
+        UPDATE bs
+        SET TrangThai = N'Đang mượn'
+        FROM BanSao bs
+        JOIN PhieuMuon pm ON bs.MaBanSao = pm.MaBanSao
+        WHERE pm.MaPhieuMuon = @MaPhieuMuon;
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRAN;
+        THROW;
+    END CATCH
+END
+--Tạo phiếu mượn off
+CREATE PROCEDURE sp_TaoPhieuMuon_Offline
+    @MaPhieuMuon NVARCHAR(20),
+    @MaBanDoc NVARCHAR(20),
+    @MaBanSao NVARCHAR(20),
+    @NgayMuon DATE,
+    @HanTra DATE
+AS
+BEGIN
+	SELECT @MaPhieuMuon =
+		'PM' + RIGHT('000' +
+		CAST(ISNULL(MAX(CAST(SUBSTRING(MaPhieuMuon,2,10) AS INT)),0) + 1 AS NVARCHAR),3)
+	FROM PhieuMuon
+    IF EXISTS (
+        SELECT 1 FROM BanSao
+        WHERE MaBanSao = @MaBanSao
+        AND TrangThai = 0
+    )
+    BEGIN
+        INSERT INTO PhieuMuon
+        VALUES
+        (
+            @MaPhieuMuon,
+            @MaBanDoc,
+            @MaBanSao,
+            @NgayMuon,
+            @HanTra,
+            0,
+            N'Đã nhận sách'
+        )
+
+        UPDATE BanSao
+        SET TrangThai = 1
+        WHERE MaBanSao = @MaBanSao
+    END
+    ELSE
+    BEGIN
+        RAISERROR(N'Sách không khả dụng',16,1)
+    END
+END
+
+--Trả sách
+CREATE OR ALTER PROCEDURE sp_TraSach
+    @MaPhieuMuon NVARCHAR(20)
+AS
+BEGIN
+    DECLARE @MaBanSao NVARCHAR(20)
+    DECLARE @MaSach NVARCHAR(20)
+
+    -- lấy MaBanSao
+    SELECT @MaBanSao = MaBanSao
+    FROM PhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon
+
+    -- lấy MaSach từ BanSao
+    SELECT @MaSach = MaSach
+    FROM BanSao
+    WHERE MaBanSao = @MaBanSao
+
+    -- cập nhật phiếu
+    UPDATE PhieuMuon
+    SET TrangThai = N'Đã trả'
+    WHERE MaPhieuMuon = @MaPhieuMuon
+
+    -- trả sách về kho
+    UPDATE BanSao
+    SET TrangThai = N'Trong kho'
+    WHERE MaBanSao = @MaBanSao
+
+    EXEC sp_TuDongMuonTuDatCho @MaSach
+END
+
+--Gia hạn
+CREATE PROCEDURE sp_GiaHan
+    @MaPhieuMuon NVARCHAR(20),
+    @SoNgayThem INT
+AS
+BEGIN
+    UPDATE PhieuMuon
+    SET 
+        HanTra = DATEADD(DAY, @SoNgayThem, HanTra),
+        SoLanGiaHan = SoLanGiaHan + 1
+    WHERE MaPhieuMuon = @MaPhieuMuon
+    AND TrangThai = N'Đã nhận sách'
+END
+
+--Kiểm tra quá hạn
+CREATE PROCEDURE sp_KiemTraQuaHan
+AS
+BEGIN
+    UPDATE PhieuMuon
+    SET TrangThai = N'Quá hạn'
+    WHERE HanTra < GETDATE()
+    AND TrangThai = N'Đã nhận sách'
+END
+
+--Huỷ phiếu 
+CREATE PROCEDURE sp_HuyPhieuMuon
+    @MaPhieuMuon NVARCHAR(20)
+AS
+BEGIN
+    UPDATE PhieuMuon
+    SET TrangThai = N'Huỷ'
+	WHERE TrangThai LIKE N'%Đăng%'
+    AND TrangThai = N'Đăng ký mượn'
+END
+
+--Xoá
+CREATE PROCEDURE sp_XoaPhieuMuon
+    @MaPhieuMuon NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @TrangThai NVARCHAR(50)
+
+    -- Lấy trạng thái
+    SELECT @TrangThai = TrangThai
+    FROM PhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon
+
+    -- Không tồn tại
+    IF @TrangThai IS NULL
+    BEGIN
+        RAISERROR(N'Phiếu không tồn tại',16,1)
+        RETURN
+    END
+
+    -- Không cho xoá nếu đã nhận sách
+    IF @TrangThai NOT IN (N'Đăng ký mượn', N'Huỷ')
+    BEGIN
+        RAISERROR(N'Không thể xoá phiếu đã xử lý',16,1)
+        RETURN
+    END
+
+    DELETE FROM PhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon
+
+    PRINT N'Xoá phiếu thành công'
+END
+--Đặt chỗ
+--đặt
+CREATE OR ALTER PROCEDURE sp_DatCho
+    @MaBanDoc NVARCHAR(20),
+    @MaSach NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @MaDatCho NVARCHAR(20)
+    DECLARE @ThuTu INT
+
+    -- lấy thứ tự hàng đợi
+    SELECT @ThuTu = ISNULL(MAX(ThuTu),0) + 1
+    FROM DatCho
+    WHERE MaSach = @MaSach AND TrangThai = N'Đang chờ'
+
+    -- tạo mã
+    SELECT @MaDatCho =
+        'DC' + RIGHT('000' +
+        CAST(ISNULL(MAX(CAST(SUBSTRING(MaDatCho,3,10) AS INT)),0) + 1 AS NVARCHAR),3)
+    FROM DatCho
+
+    INSERT INTO DatCho
+    VALUES
+    (
+        @MaDatCho,
+        @MaSach,
+        @MaBanDoc,
+        DATEADD(DAY,2,GETDATE()),
+        N'Đang chờ',
+        @ThuTu
+    )
+END
+-- tự động chuyển
+CREATE PROCEDURE sp_TuDongMuonTuDatCho
+    @MaSach NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @MaBanDoc NVARCHAR(20)
+    DECLARE @MaBanSao NVARCHAR(20)
+    DECLARE @HanTra DATE
+
+    -- lấy người đầu hàng
+    SELECT TOP 1 @MaBanDoc = MaBanDoc
+    FROM DatCho
+    WHERE MaSach = @MaSach
+    AND TrangThai = N'Đang chờ'
+    ORDER BY ThuTu
+
+    -- lấy bản sao còn
+    SELECT TOP 1 @MaBanSao = MaBanSao
+    FROM BanSao
+    WHERE MaSach = @MaSach
+    AND TrangThai = N'Trong kho'
+
+    IF @MaBanDoc IS NOT NULL AND @MaBanSao IS NOT NULL
+    BEGIN
+        -- tạo hạn trả
+        SET @HanTra = DATEADD(DAY, 7, GETDATE())
+
+        -- gọi mượn
+        EXEC sp_DangKyMuon @MaBanDoc, @MaBanSao, @HanTra
+
+        -- cập nhật đặt chỗ
+        UPDATE DatCho
+        SET TrangThai = N'Đã xử lý'
+        WHERE MaBanDoc = @MaBanDoc
+        AND MaSach = @MaSach
+    END
+END
+-- sau khi trả sách xong
+
+--Huỷ đặt chỗ
+CREATE OR ALTER PROCEDURE sp_HuyDatCho
+    @MaDatCho NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @MaSach NVARCHAR(20)
+    DECLARE @ThuTu INT
+
+    -- lấy thông tin
+    SELECT 
+        @MaSach = MaSach,
+        @ThuTu = ThuTu
+    FROM DatCho
+    WHERE MaDatCho = @MaDatCho
+
+    -- kiểm tra tồn tại
+    IF @MaSach IS NULL
+    BEGIN
+        RAISERROR(N'Không tìm thấy đặt chỗ',16,1)
+        RETURN
+    END
+
+    -- chỉ huỷ khi đang chờ
+    IF NOT EXISTS (
+        SELECT 1 FROM DatCho
+        WHERE MaDatCho = @MaDatCho
+        AND TrangThai = N'Đang chờ'
+    )
+    BEGIN
+        RAISERROR(N'Không thể huỷ',16,1)
+        RETURN
+    END
+
+    -- huỷ
+    UPDATE DatCho
+    SET TrangThai = N'Huỷ'
+    WHERE MaDatCho = @MaDatCho
+
+    -- 🔥 cập nhật lại hàng đợi
+    UPDATE DatCho
+    SET ThuTu = ThuTu - 1
+    WHERE MaSach = @MaSach
+    AND ThuTu > @ThuTu
+    AND TrangThai = N'Đang chờ'
+END
+
+--TỰ động hết hạn
+CREATE OR ALTER PROCEDURE sp_HetHanDatCho
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- đánh dấu hết hạn
+    UPDATE DatCho
+    SET TrangThai = N'Hết hạn'
+    WHERE ThoiGianGiuCho < GETDATE()
+    AND TrangThai = N'Đang chờ'
+
+    -- 🔥 cập nhật lại hàng đợi
+    ;WITH CTE AS (
+        SELECT 
+            MaDatCho,
+            MaSach,
+            ROW_NUMBER() OVER (PARTITION BY MaSach ORDER BY ThuTu) AS NewThuTu
+        FROM DatCho
+        WHERE TrangThai = N'Đang chờ'
+    )
+    UPDATE dc
+    SET ThuTu = c.NewThuTu
+    FROM DatCho dc
+    JOIN CTE c ON dc.MaDatCho = c.MaDatCho
 END

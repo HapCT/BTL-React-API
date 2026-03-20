@@ -15,4 +15,3 @@ D:\BTL React\QuanLyThueSach\QuanLyThueSach.BLL\obj\Debug\net8.0\QuanLyThueSach.B
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.BLL\obj\Debug\net8.0\refint\QuanLyThueSach.BLL.dll
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.BLL\obj\Debug\net8.0\QuanLyThueSach.BLL.pdb
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.BLL\obj\Debug\net8.0\ref\QuanLyThueSach.BLL.dll
-D:\BTL React\QuanLyThueSach\QuanLyThueSach.BLL\obj\Debug\net8.0\QuanLyThueSach.BLL.sourcelink.json
