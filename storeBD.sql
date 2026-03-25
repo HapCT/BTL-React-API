@@ -1250,6 +1250,25 @@ BEGIN
 END
 --Đặt chỗ
 --đặt
+CREATE SEQUENCE Seq_DatCho
+START WITH 1000
+INCREMENT BY 1;
+SELECT NEXT VALUE FOR Seq_DatCho
+UPDATE BanSao
+SET TrangThai = N'Trong kho'
+WHERE MaBanSao = 'BS0013'
+Select * From BanSao
+EXEC sp_DatCho 'BD001', 'S003'
+SELECT * FROM PhieuMuon
+SELECT * FROM DatCho
+-- 1. kiểm tra DB
+SELECT DB_NAME()
+
+-- 2. kiểm tra sequence
+SELECT * FROM sys.sequences WHERE name = 'Seq_DatCho'
+
+-- 3. test sequence
+SELECT NEXT VALUE FOR dbo.Seq_DatCho
 CREATE OR ALTER PROCEDURE sp_DatCho
     @MaBanDoc NVARCHAR(20),
     @MaSach NVARCHAR(20)
@@ -1257,30 +1276,61 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @MaDatCho NVARCHAR(20)
-    DECLARE @ThuTu INT
+    BEGIN TRY
+        BEGIN TRAN
 
-    -- lấy thứ tự hàng đợi
-    SELECT @ThuTu = ISNULL(MAX(ThuTu),0) + 1
-    FROM DatCho
-    WHERE MaSach = @MaSach AND TrangThai = N'Đang chờ'
+        DECLARE @MaDatCho NVARCHAR(20)
+        DECLARE @ThuTu INT
 
-    -- tạo mã
-    SELECT @MaDatCho =
-        'DC' + RIGHT('000' +
-        CAST(ISNULL(MAX(CAST(SUBSTRING(MaDatCho,3,10) AS INT)),0) + 1 AS NVARCHAR),3)
-    FROM DatCho
+        -- check trùng
+        IF EXISTS (
+            SELECT 1 FROM DatCho
+            WHERE MaSach = @MaSach
+            AND MaBanDoc = @MaBanDoc
+            AND TrangThai = N'Đang chờ'
+        )
+        BEGIN
+            RAISERROR(N'Bạn đã đặt sách này rồi',16,1)
+            ROLLBACK
+            RETURN
+        END
 
-    INSERT INTO DatCho
-    VALUES
-    (
-        @MaDatCho,
-        @MaSach,
-        @MaBanDoc,
-        DATEADD(DAY,2,GETDATE()),
-        N'Đang chờ',
-        @ThuTu
-    )
+        -- tính thứ tự
+        SELECT @ThuTu = ISNULL(MAX(ThuTu),0) + 1
+        FROM DatCho WITH (UPDLOCK, HOLDLOCK)
+        WHERE MaSach = @MaSach AND TrangThai = N'Đang chờ'
+
+        -- 🔥 FIX: gọi đúng sequence (có schema dbo)
+        SET @MaDatCho = 'DC' + CAST(NEXT VALUE FOR dbo.Seq_DatCho AS NVARCHAR)
+
+        INSERT INTO DatCho
+        (
+            MaDatCho,
+            MaSach,
+            MaBanDoc,
+            ThoiGianGiuCho,
+            TrangThai,
+            ThuTu
+        )
+        VALUES
+        (
+            @MaDatCho,
+            @MaSach,
+            @MaBanDoc,
+            DATEADD(DAY,2,GETDATE()),
+            N'Đang chờ',
+            @ThuTu
+        )
+
+        COMMIT
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK
+
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE()
+        RAISERROR(@ErrorMessage, 16, 1)
+    END CATCH
 END
 -- tự động chuyển
 CREATE PROCEDURE sp_TuDongMuonTuDatCho
@@ -1397,3 +1447,316 @@ BEGIN
     FROM DatCho dc
     JOIN CTE c ON dc.MaDatCho = c.MaDatCho
 END
+
+-- Trig
+CREATE TRIGGER trg_AutoMuonTuDatCho
+ON BanSao
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Chỉ xử lý khi sách chuyển từ Đang mượn → Trong kho
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        JOIN deleted d ON i.MaBanSao = d.MaBanSao
+        WHERE i.TrangThai = N'Trong kho'
+        AND d.TrangThai = N'Đang mượn'
+    )
+    BEGIN
+        DECLARE @MaSach NVARCHAR(20)
+
+        -- lấy sách vừa trả
+        SELECT TOP 1 @MaSach = MaSach FROM inserted
+
+        -- gọi SP tự động mượn
+        EXEC sp_TuDongMuonTuDatCho @MaSach
+    END
+END
+
+--Phạt
+CREATE PROCEDURE spPhat
+    @MaPhieuMuon NVARCHAR(20),
+    @LyDoPhat NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE 
+        @NgayTra DATE = GETDATE(),
+        @HanTra DATE,
+        @SoNgayTre INT = 0,
+        @SoTien DECIMAL = 0,
+        @MaPhat NVARCHAR(20),
+        @MaBanDoc NVARCHAR(20)
+
+    -- Lấy thông tin phiếu mượn
+    SELECT 
+        @HanTra = HanTra,
+        @MaBanDoc = MaBanDoc
+    FROM PhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon
+
+    -- Tính số ngày trễ
+    IF (@NgayTra > @HanTra)
+        SET @SoNgayTre = DATEDIFF(DAY, @HanTra, @NgayTra)
+
+    -- Tính tiền phạt trễ hạn
+    SET @SoTien = @SoNgayTre * 5000
+
+    -- Nếu có lý do thêm (hỏng/mất)
+    IF (@LyDoPhat LIKE N'%hỏng%')
+        SET @SoTien = @SoTien + 50000
+
+    IF (@LyDoPhat LIKE N'%mất%')
+        SET @SoTien = @SoTien + 200000
+
+    -- Tạo mã phạt (tự tăng đơn giản)
+    SELECT @MaPhat = 'P' + RIGHT('0000' + CAST(COUNT(*) + 1 AS VARCHAR), 4)
+    FROM Phat
+
+    -- Insert vào bảng Phạt
+    INSERT INTO Phat
+    (
+        MaPhat,
+        MaPhieuMuon,
+        SoTien,
+        LyDoPhat,
+        NgayTinh,
+        TrangThai
+    )
+    VALUES
+    (
+        @MaPhat,
+        @MaPhieuMuon,
+        @SoTien,
+        @LyDoPhat,
+        @NgayTra,
+        N'Chưa thanh toán'
+    )
+
+    -- Cập nhật dư nợ bạn đọc
+    UPDATE BanDoc
+    SET DuNo = ISNULL(DuNo, 0) + @SoTien
+    WHERE MaBanDoc = @MaBanDoc
+
+END
+GO
+EXEC spPhat 
+    @MaPhieuMuon = 'PM001',
+    @LyDoPhat = N'Trễ hạn và hỏng sách'
+
+-- Hiển thị
+CREATE PROCEDURE sp_GetPhatFull
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        p.MaPhat,
+        p.MaPhieuMuon,
+        bd.MaBanDoc,
+        bd.HoTen AS TenBanDoc,
+        s.TieuDe AS TenSach,
+        p.SoTien,
+        p.LyDoPhat,
+        p.NgayTinh,
+        p.TrangThai
+    FROM Phat p
+    JOIN PhieuMuon pm ON p.MaPhieuMuon = pm.MaPhieuMuon
+    JOIN BanDoc bd ON pm.MaBanDoc = bd.MaBanDoc
+    JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+    JOIN Sach s ON bs.MaSach = s.MaSach
+    ORDER BY p.NgayTinh DESC
+END
+GO
+
+-- TÌm
+CREATE PROCEDURE sp_SearchPhat
+    @Keyword NVARCHAR(100) = NULL,
+    @TrangThai NVARCHAR(20) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        p.MaPhat,
+        p.MaPhieuMuon,
+        bd.MaBanDoc,
+        bd.HoTen AS TenBanDoc,
+        s.TieuDe AS TenSach,
+        p.SoTien,
+        p.LyDoPhat,
+        p.NgayTinh,
+        p.TrangThai
+    FROM Phat p
+    JOIN PhieuMuon pm ON p.MaPhieuMuon = pm.MaPhieuMuon
+    JOIN BanDoc bd ON pm.MaBanDoc = bd.MaBanDoc
+    JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+    JOIN Sach s ON bs.MaSach = s.MaSach
+    WHERE
+        (
+            @Keyword IS NULL 
+            OR p.MaPhat LIKE '%' + @Keyword + '%'
+            OR bd.HoTen LIKE '%' + @Keyword + '%'
+            OR s.TieuDe LIKE '%' + @Keyword + '%'
+        )
+        AND (@TrangThai IS NULL OR p.TrangThai = @TrangThai)
+    ORDER BY p.NgayTinh DESC
+END
+GO
+-- Huỷ 
+CREATE PROCEDURE sp_HuyPhat
+    @MaPhat NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE Phat
+    SET TrangThai = N'Đã huỷ'
+    WHERE 
+        MaPhat = @MaPhat
+        AND TrangThai = N'Chưa thanh toán'
+END
+GO
+--
+
+ALTER PROCEDURE sp_ThanhToanPhat
+    @MaPhat NVARCHAR(20),
+    @HinhThucThanhToan NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN
+
+        DECLARE 
+            @SoTien DECIMAL,
+            @MaBanDoc NVARCHAR(20),
+            @MaThanhToan NVARCHAR(20)
+
+        -- Lấy dữ liệu
+        SELECT 
+            @SoTien = p.SoTien,
+            @MaBanDoc = bd.MaBanDoc
+        FROM Phat p
+        JOIN PhieuMuon pm ON p.MaPhieuMuon = pm.MaPhieuMuon
+        JOIN BanDoc bd ON pm.MaBanDoc = bd.MaBanDoc
+        WHERE p.MaPhat = @MaPhat
+          AND p.TrangThai = N'Chưa thanh toán'
+
+        IF @SoTien IS NULL
+        BEGIN
+            ROLLBACK
+            RETURN
+        END
+
+        -- Update phạt
+        UPDATE Phat
+        SET TrangThai = N'Đã thanh toán'
+        WHERE MaPhat = @MaPhat
+
+        -- Trừ nợ
+        UPDATE BanDoc
+        SET DuNo = ISNULL(DuNo,0) - @SoTien
+        WHERE MaBanDoc = @MaBanDoc
+
+        -- Tạo mã thanh toán
+        SELECT @MaThanhToan = 'TT' + RIGHT('0000' + CAST(COUNT(*) + 1 AS VARCHAR), 4)
+        FROM ThanhToan
+
+        -- 🔥 Lưu hình thức thanh toán
+        INSERT INTO ThanhToan
+(
+    MaThanhToan,
+    MaBanDoc,
+    NgayThanhToan,
+    SoTien,
+    HinhThucThanhToan,
+    GhiChu,
+    TrangThai
+)
+VALUES
+(
+    @MaThanhToan,
+    @MaBanDoc,
+    GETDATE(),
+    @SoTien,
+    @HinhThucThanhToan,
+    N'Thanh toán phạt ' + @MaPhat,
+    N'Đã thanh toán'
+)
+
+        COMMIT
+    END TRY
+    BEGIN CATCH
+        ROLLBACK
+    END CATCH
+END
+GO
+
+CREATE PROCEDURE sp_GetHoaDon
+    @MaThanhToan NVARCHAR(20)
+AS
+BEGIN
+    SELECT 
+        tt.MaThanhToan,
+        bd.HoTen,
+        bd.SoDienThoai,
+        tt.NgayThanhToan,
+        tt.SoTien,
+        tt.HinhThucThanhToan,
+        tt.GhiChu
+    FROM ThanhToan tt
+    JOIN BanDoc bd ON tt.MaBanDoc = bd.MaBanDoc
+    WHERE tt.MaThanhToan = @MaThanhToan
+END
+GO
+
+CREATE PROCEDURE sp_GetThanhToan
+AS
+BEGIN
+    SELECT 
+        tt.MaThanhToan,
+        bd.HoTen,
+        tt.SoTien,
+        tt.NgayThanhToan,
+        tt.HinhThucThanhToan
+    FROM ThanhToan tt
+    JOIN BanDoc bd ON tt.MaBanDoc = bd.MaBanDoc
+    ORDER BY tt.NgayThanhToan DESC
+END
+GO
+
+ALTER PROCEDURE sp_HuyThanhToan
+    @MaThanhToan NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE 
+        @SoTien DECIMAL,
+        @MaBanDoc NVARCHAR(20)
+
+    SELECT 
+        @SoTien = SoTien,
+        @MaBanDoc = MaBanDoc
+    FROM ThanhToan
+    WHERE MaThanhToan = @MaThanhToan
+      AND TrangThai = N'Đã thanh toán'
+
+    IF @SoTien IS NULL RETURN
+
+    -- Huỷ
+    UPDATE ThanhToan
+    SET TrangThai = N'Đã huỷ'
+    WHERE MaThanhToan = @MaThanhToan
+
+    -- 🔥 Cộng lại nợ
+    UPDATE BanDoc
+    SET DuNo = ISNULL(DuNo,0) + @SoTien
+    WHERE MaBanDoc = @MaBanDoc
+END
+GO

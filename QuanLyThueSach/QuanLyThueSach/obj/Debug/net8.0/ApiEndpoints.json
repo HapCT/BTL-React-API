@@ -206,6 +206,74 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "QuanLyThueSach.Controllers.DatChoController",
+    "Method": "GetAll",
+    "RelativePath": "api/DatCho",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.DatChoController",
+    "Method": "Create",
+    "RelativePath": "api/DatCho",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.TaoDatChoRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.DatChoController",
+    "Method": "HetHan",
+    "RelativePath": "api/DatCho/hethan",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.DatChoController",
+    "Method": "HuyDatCho",
+    "RelativePath": "api/DatCho/huy/{maDatCho}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maDatCho",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.DatChoController",
+    "Method": "TuDongMuon",
+    "RelativePath": "api/DatCho/tudong-muon",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maSach",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
     "Method": "GetAll",
     "RelativePath": "api/KeSach",
@@ -294,6 +362,85 @@
     "Parameters": [
       {
         "Name": "tuKhoa",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhatController",
+    "Method": "Get",
+    "RelativePath": "api/Phat",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhatController",
+    "Method": "TaoPhat",
+    "RelativePath": "api/Phat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.TaoPhatRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhatController",
+    "Method": "Huy",
+    "RelativePath": "api/Phat/huy/{maPhat}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhat",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhatController",
+    "Method": "Search",
+    "RelativePath": "api/Phat/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "trangThai",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhatController",
+    "Method": "ThanhToan",
+    "RelativePath": "api/Phat/thanh-toan/{maPhat}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhat",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -446,9 +593,39 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "sach",
-        "Type": "QuanLyThueSach.Models.ThemSach",
-        "IsRequired": true
+        "Name": "MaTheLoai",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TieuDe",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TacGia",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NamXB",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NgonNgu",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SoLuongSach",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "HinhAnh",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -628,6 +805,48 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "QuanLyThueSach.Controllers.ThanhToanController",
+    "Method": "Get",
+    "RelativePath": "api/ThanhToan",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThanhToanController",
+    "Method": "GetHoaDon",
+    "RelativePath": "api/ThanhToan/{maThanhToan}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maThanhToan",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThanhToanController",
+    "Method": "HuyThanhToan",
+    "RelativePath": "api/ThanhToan/huy/{maThanhToan}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maThanhToan",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "QuanLyThueSach.Controllers.TheLoaiController",
     "Method": "GetAll",
     "RelativePath": "api/TheLoai",
@@ -718,6 +937,48 @@
         "Name": "tukhoa",
         "Type": "System.String",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ocelot.Configuration.FileConfigurationController",
+    "Method": "Get",
+    "RelativePath": "configuration",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ocelot.Configuration.FileConfigurationController",
+    "Method": "Post",
+    "RelativePath": "configuration",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fileConfiguration",
+        "Type": "Ocelot.Configuration.File.FileConfiguration",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ocelot.Cache.OutputCacheController",
+    "Method": "Delete",
+    "RelativePath": "outputcache/{region}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "region",
+        "Type": "System.String",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

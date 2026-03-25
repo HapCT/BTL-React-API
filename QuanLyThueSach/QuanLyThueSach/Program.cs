@@ -1,5 +1,6 @@
 ﻿using QuanLyThueSach.BLL;
 using QuanLyThueSach.DAL;
+using QuanLyThueSach.Services;
 using static QuanLyThueSach.BLL.BanSaoBLL;
 using static QuanLyThueSach.BLL.KeSachBLL;
 using static QuanLyThueSach.DAL.BanSaoDAL;
@@ -31,9 +32,28 @@ builder.Services.AddScoped<IBanSaoServices, BanSaoService>();
 //Phiếu mượn
 builder.Services.AddScoped<PhieuMuonBLL.IPhieuMuonServices, PhieuMuonBLL.PhieuMuonService>();
 builder.Services.AddScoped<PhieuMuonDAL.IPhieuMuonRepository, PhieuMuonDAL.PhieuMuonRepository>();
+//Đặt chỗ
+builder.Services.AddScoped<DatChoBLL.IDatChoServices, DatChoBLL.DatChoService>();
+builder.Services.AddScoped<DatChoDAL.IDatChoRepository, DatChoDAL.DatChoRepository>();
+builder.Services.AddHostedService<DatChoBackgroundService>();
+// Phạt
+builder.Services.AddScoped<PhatBLL.IPhatServices, PhatBLL.PhatService>();
+builder.Services.AddScoped<PhatDAL.IPhatRepository, PhatDAL.PhatRepository>();
+//Thanh toán
+builder.Services.AddScoped<ThanhToanBLL.IThanhToanServices, ThanhToanBLL.ThanhToanService>();
+builder.Services.AddScoped<ThanhToanDAL.IThanhToanRepository, ThanhToanDAL.ThanhToanRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -43,7 +63,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 app.UseHttpsRedirection();
-
+app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();

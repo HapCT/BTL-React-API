@@ -132,3 +132,6 @@ CREATE TABLE ThanhToan
 	GhiChu NVARCHAR(MAX),
 	FOREIGN KEY (MaBanDoc) REFERENCES BanDoc(MaBanDoc)
 )
+ALTER TABLE ThanhToan
+ADD TrangThai NVARCHAR(20)
+DEFAULT N'Đã thanh toán'
