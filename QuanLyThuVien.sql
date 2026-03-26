@@ -48,7 +48,7 @@ CREATE TABLE Sach
 	NamXB NVARCHAR(10),
 	NgonNgu NVARCHAR(20),
 	SoLuongSach INT,
-	HinhAnh NVARCHAR(255),
+	HinhAnh NVARCHAR(255) = NULL,
 	FOREIGN KEY (MaTheLoai) REFERENCES TheLoai(MaTheLoai)
 )	
 
@@ -132,6 +132,3 @@ CREATE TABLE ThanhToan
 	GhiChu NVARCHAR(MAX),
 	FOREIGN KEY (MaBanDoc) REFERENCES BanDoc(MaBanDoc)
 )
-ALTER TABLE ThanhToan
-ADD TrangThai NVARCHAR(20)
-DEFAULT N'Đã thanh toán'

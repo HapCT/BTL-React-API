@@ -1052,19 +1052,63 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/SuaSach"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SuaSach"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SuaSach"
+                "type": "object",
+                "properties": {
+                  "MaTheLoai": {
+                    "type": "string"
+                  },
+                  "TieuDe": {
+                    "type": "string"
+                  },
+                  "TacGia": {
+                    "type": "string"
+                  },
+                  "NamXB": {
+                    "type": "string"
+                  },
+                  "NgonNgu": {
+                    "type": "string"
+                  },
+                  "SoLuongSach": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "HinhAnh": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "HinhAnhCu": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "MaTheLoai": {
+                  "style": "form"
+                },
+                "TieuDe": {
+                  "style": "form"
+                },
+                "TacGia": {
+                  "style": "form"
+                },
+                "NamXB": {
+                  "style": "form"
+                },
+                "NgonNgu": {
+                  "style": "form"
+                },
+                "SoLuongSach": {
+                  "style": "form"
+                },
+                "HinhAnh": {
+                  "style": "form"
+                },
+                "HinhAnhCu": {
+                  "style": "form"
+                }
               }
             }
           }
@@ -2208,40 +2252,6 @@
             "nullable": true
           },
           "viTri": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "SuaSach": {
-        "type": "object",
-        "properties": {
-          "maTheLoai": {
-            "type": "string",
-            "nullable": true
-          },
-          "tieuDe": {
-            "type": "string",
-            "nullable": true
-          },
-          "tacGia": {
-            "type": "string",
-            "nullable": true
-          },
-          "namXB": {
-            "type": "string",
-            "nullable": true
-          },
-          "ngonNgu": {
-            "type": "string",
-            "nullable": true
-          },
-          "soLuongSach": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "hinhAnh": {
             "type": "string",
             "nullable": true
           }

@@ -25,7 +25,7 @@ namespace QuanLyThueSach.Models
         public string NamXB { get; set; }
         public string NgonNgu { get; set; }
         public int SoLuongSach { get; set; }
-        public string HinhAnh { get; set; }
+        public string? HinhAnh { get; set; }
     }
     public class SuaSach
     {
@@ -35,6 +35,7 @@ namespace QuanLyThueSach.Models
         public string NamXB { get; set; }
         public string NgonNgu { get; set; }
         public int SoLuongSach { get; set; }
-        public string HinhAnh { get; set; }
+        public string? HinhAnh { get; set; }
+        public string? HinhAnhCu { get; set; }
     }
 }

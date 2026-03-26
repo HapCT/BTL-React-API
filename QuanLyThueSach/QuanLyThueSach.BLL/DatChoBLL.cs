@@ -6,7 +6,7 @@ namespace QuanLyThueSach.BLL
     {
         public interface IDatChoServices
         {
-            Task<Respon<List<DatChoModel>>> GetAsync();
+            Task<Respon<List<DatChoViewModel>>> GetAsync();
             Task<Respon<int>> DatChoAsync(TaoDatChoRequest request);
             Task<Respon<int>> HuyDatChoAsync(string maDatCho);
             Task<Respon<int>> HetHanDatChoAsync();
@@ -23,13 +23,13 @@ namespace QuanLyThueSach.BLL
             }
 
             // 🔹 Lấy danh sách đặt chỗ
-            public async Task<Respon<List<DatChoModel>>> GetAsync()
+            public async Task<Respon<List<DatChoViewModel>>> GetAsync()
             {
                 try
                 {
                     var list = await _repository.GetAsync();
 
-                    return new Respon<List<DatChoModel>>
+                    return new Respon<List<DatChoViewModel>>
                     {
                         StatusCode = 200,
                         Message = "Lấy danh sách đặt chỗ thành công",
@@ -38,7 +38,7 @@ namespace QuanLyThueSach.BLL
                 }
                 catch (Exception ex)
                 {
-                    return new Respon<List<DatChoModel>>
+                    return new Respon<List<DatChoViewModel>>
                     {
                         StatusCode = 500,
                         Message = $"Lỗi: {ex.Message}",

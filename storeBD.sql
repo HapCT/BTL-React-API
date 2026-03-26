@@ -576,75 +576,108 @@ BEGIN
 
 END
 GO
-
+SELECT * FROM TheLoai
 -- Sửa sách
-CREATE OR ALTER PROCEDURE sp_SuaSach
-	@MaSach NVARCHAR(20),
-	@MaTheLoai NVARCHAR(20),
-	@TieuDe NVARCHAR(50),
-	@TacGia NVARCHAR(20),
-	@NamXB NVARCHAR(10),
-	@NgonNgu NVARCHAR(20),
-	@SoLuongSach INT,
-	@HinhAnh NVARCHAR(255)
+CREATE PROCEDURE sp_SuaSach
+    @MaSach NVARCHAR(20),
+    @MaTheLoai NVARCHAR(20),
+    @TieuDe NVARCHAR(50),
+    @TacGia NVARCHAR(20),
+    @NamXB NVARCHAR(10),
+    @NgonNgu NVARCHAR(20),
+    @SoLuongSach INT,
+    @HinhAnh NVARCHAR(255) = NULL,
+    @HinhAnhCu NVARCHAR(255) = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
 
-	-- kiểm tra trùng sách
-	IF EXISTS (
-		SELECT 1 
-		FROM Sach
-		WHERE TieuDe = @TieuDe 
-		AND TacGia = @TacGia
-		AND MaSach <> @MaSach
-	)
-	BEGIN
-		RAISERROR(N'Sách đã tồn tại',16,1)
-		RETURN
-	END
+    IF EXISTS (
+        SELECT 1
+        FROM Sach
+        WHERE TieuDe = @TieuDe
+        AND TacGia = @TacGia
+        AND MaSach <> @MaSach
+    )
+    BEGIN
+        RAISERROR(N'Sách đã tồn tại',16,1)
+        RETURN
+    END
 
-	UPDATE Sach
-	SET
-		TieuDe = @TieuDe,
-		TacGia = @TacGia,
-		MaTheLoai = @MaTheLoai,
-		NamXB = @NamXB,
-		NgonNgu = @NgonNgu,
-		SoLuongSach = @SoLuongSach,
-		HinhAnh = @HinhAnh
-	WHERE MaSach = @MaSach
-
+    UPDATE Sach
+    SET
+        TieuDe = @TieuDe,
+        TacGia = @TacGia,
+        MaTheLoai = @MaTheLoai,
+        NamXB = @NamXB,
+        NgonNgu = @NgonNgu,
+        SoLuongSach = @SoLuongSach,
+        HinhAnh = ISNULL(@HinhAnh, @HinhAnhCu)
+    WHERE MaSach = @MaSach
 END
 GO
-GO
+DROP PROCEDURE sp_SuaSach 
+
 -- Xoá sách
 CREATE OR ALTER PROCEDURE sp_XoaSach
-	@MaSach NVARCHAR(20)
+    @MaSach NVARCHAR(20)
 AS
 BEGIN
+    SET NOCOUNT ON;
 
-	-- kiểm tra sách đang được mượn
-	IF EXISTS (
-		SELECT 1
-		FROM ChiTietPhieuMuon ct
-		JOIN BanSao bs ON ct.MaBanSao = bs.MaBanSao
-		WHERE bs.MaSach = @MaSach
-	)
-	BEGIN
-		PRINT N'Sách đang được mượn'
-		RETURN
-	END
+    -- ❗ 1. đang mượn
+    IF EXISTS (
+        SELECT 1
+        FROM PhieuMuon pm
+        JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+        WHERE bs.MaSach = @MaSach
+        AND pm.TrangThai IN (N'Đã nhận sách')
+    )
+    BEGIN
+        RAISERROR(N'Sách đang được mượn, không thể xoá', 16, 1)
+        RETURN
+    END
 
-	-- xoá các bản sao trước
-	DELETE FROM BanSao
-	WHERE MaSach = @MaSach
+    -- ❗ 2. chưa thanh toán
+    IF EXISTS (
+        SELECT 1
+        FROM Phat p
+        JOIN PhieuMuon pm ON p.MaPhieuMuon = pm.MaPhieuMuon
+        JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+        WHERE bs.MaSach = @MaSach
+        AND p.TrangThai = N'Chưa thanh toán'
+    )
+    BEGIN
+        RAISERROR(N'Sách có phiếu phạt chưa thanh toán, không thể xoá', 16, 1)
+        RETURN
+    END
 
-	-- xoá sách
-	DELETE FROM Sach
-	WHERE MaSach = @MaSach
+    -- 🔥 1. Phat
+    DELETE p
+    FROM Phat p
+    JOIN PhieuMuon pm ON p.MaPhieuMuon = pm.MaPhieuMuon
+    JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+    WHERE bs.MaSach = @MaSach
 
-	PRINT N'Xóa sách thành công'
+    -- 🔥 2. PhieuMuon
+    DELETE pm
+    FROM PhieuMuon pm
+    JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+    WHERE bs.MaSach = @MaSach
 
+    -- 🔥 3. DatCho (QUAN TRỌNG)
+    DELETE FROM DatCho
+    WHERE MaSach = @MaSach
+
+    -- 🔥 4. BanSao
+    DELETE FROM BanSao
+    WHERE MaSach = @MaSach
+
+    -- 🔥 5. Sach
+    DELETE FROM Sach
+    WHERE MaSach = @MaSach
+
+    PRINT N'Xóa sách thành công'
 END
 GO
 -- tìm theo ID
@@ -1332,6 +1365,24 @@ BEGIN
         RAISERROR(@ErrorMessage, 16, 1)
     END CATCH
 END
+--Hiển thị
+CREATE PROCEDURE sp_LayDanhSachDatCho
+AS
+BEGIN
+    SELECT 
+        dc.MaDatCho,
+        dc.MaSach,
+        s.TieuDe,
+        dc.MaBanDoc,
+        bd.HoTen,
+        dc.ThoiGianGiuCho,
+        dc.TrangThai,
+        dc.ThuTu
+    FROM DatCho dc
+    INNER JOIN Sach s ON dc.MaSach = s.MaSach
+    INNER JOIN BanDoc bd ON dc.MaBanDoc = bd.MaBanDoc
+    ORDER BY dc.MaSach, dc.ThuTu
+END
 -- tự động chuyển
 CREATE PROCEDURE sp_TuDongMuonTuDatCho
     @MaSach NVARCHAR(20)
@@ -1612,7 +1663,6 @@ CREATE PROCEDURE sp_HuyPhat
 AS
 BEGIN
     SET NOCOUNT ON;
-
     UPDATE Phat
     SET TrangThai = N'Đã huỷ'
     WHERE 
@@ -1715,21 +1765,24 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE sp_GetThanhToan
+ALTER PROCEDURE sp_GetThanhToan
 AS
 BEGIN
     SELECT 
         tt.MaThanhToan,
-        bd.HoTen,
-        tt.SoTien,
+        tt.MaBanDoc,
+        bd.HoTen AS TenBanDoc, -- ✅ FIX Ở ĐÂY
+        bd.SoDienThoai,
         tt.NgayThanhToan,
-        tt.HinhThucThanhToan
+        tt.SoTien,
+        tt.HinhThucThanhToan,
+        tt.GhiChu,
+        tt.TrangThai
     FROM ThanhToan tt
     JOIN BanDoc bd ON tt.MaBanDoc = bd.MaBanDoc
     ORDER BY tt.NgayThanhToan DESC
 END
-GO
-
+GO SELECT * FROM ThanhToan
 ALTER PROCEDURE sp_HuyThanhToan
     @MaThanhToan NVARCHAR(20)
 AS
@@ -1760,3 +1813,12 @@ BEGIN
     WHERE MaBanDoc = @MaBanDoc
 END
 GO
+
+EXEC sp_TraSach
+EXEC sp_TraSach @MaPhieuMuon = 'PM001'
+EXEC sp_ThanhToanPhat @MaPhat = 'P0001', @HinhThucThanhToan = N'Tiền mặt'
+UPDATE Phat
+SET TrangThai = N'Chưa thanh toán'
+WHERE MaPhat = 'P0001'
+
+SELECT * FROM ThanhToan

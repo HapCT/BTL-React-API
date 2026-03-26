@@ -87,11 +87,35 @@ namespace QuanLyThueSach.Controllers
 
         // Sửa sách
         [HttpPut("{masach}")]
-        public async Task<IActionResult> SuaSach(string masach, SuaSach sach)
+        public async Task<IActionResult> SuaSach(string masach, [FromForm] SuaSachRequest model)
         {
             try
             {
-                var response = await _SachService.SuaSachAsync(masach, sach);
+                string fileName = null;
+
+                if (model.HinhAnh != null)
+                {
+                    fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.HinhAnh.FileName);
+
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+
+                    using var stream = new FileStream(path, FileMode.Create);
+                    await model.HinhAnh.CopyToAsync(stream);
+                }
+
+                string url = fileName != null ? "/images/" + fileName : model.HinhAnhCu;
+
+                var response = await _SachService.SuaSachAsync(masach, new SuaSach
+                {
+                    MaTheLoai = model.MaTheLoai,
+                    TieuDe = model.TieuDe,
+                    TacGia = model.TacGia,
+                    NamXB = model.NamXB,
+                    NgonNgu = model.NgonNgu,
+                    SoLuongSach = model.SoLuongSach,
+                    HinhAnh = url
+                });
+
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)

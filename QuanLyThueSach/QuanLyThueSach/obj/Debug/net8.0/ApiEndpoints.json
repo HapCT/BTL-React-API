@@ -660,9 +660,44 @@
         "IsRequired": true
       },
       {
-        "Name": "sach",
-        "Type": "QuanLyThueSach.Models.SuaSach",
-        "IsRequired": true
+        "Name": "MaTheLoai",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TieuDe",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TacGia",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NamXB",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NgonNgu",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "SoLuongSach",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "HinhAnh",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "HinhAnhCu",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

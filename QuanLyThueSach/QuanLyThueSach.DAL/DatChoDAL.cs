@@ -9,7 +9,7 @@ namespace QuanLyThueSach.DAL
     {
         public interface IDatChoRepository
         {
-            Task<List<DatChoModel>> GetAsync();
+            Task<List<DatChoViewModel>> GetAsync();
             Task<int> DatChoAsync(TaoDatChoRequest request);
             Task<int> HuyDatChoAsync(string maDatCho);
             Task<int> HetHanDatChoAsync();
@@ -26,27 +26,30 @@ namespace QuanLyThueSach.DAL
             }
 
             // 🔹 Hiển thị danh sách đặt chỗ
-            public async Task<List<DatChoModel>> GetAsync()
+            public async Task<List<DatChoViewModel>> GetAsync()
             {
-                var list = new List<DatChoModel>();
+                var list = new List<DatChoViewModel>();
 
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
 
-                using var cmd = new SqlCommand("SELECT * FROM DatCho", connect);
+                using var cmd = new SqlCommand("sp_LayDanhSachDatCho", connect);
+                cmd.CommandType = CommandType.StoredProcedure;
 
                 using var rd = await cmd.ExecuteReaderAsync();
 
-                while (await rd.ReadAsync())
+                while (rd.Read())
                 {
-                    list.Add(new DatChoModel
+                    list.Add(new DatChoViewModel
                     {
-                        MaDatCho = rd["MaDatCho"].ToString(),
-                        MaSach = rd["MaSach"].ToString(),
-                        MaBanDoc = rd["MaBanDoc"].ToString(),
-                        ThoiGianGiuCho = Convert.ToDateTime(rd["ThoiGianGiuCho"]),
-                        TrangThai = rd["TrangThai"].ToString(),
-                        ThuTu = Convert.ToInt32(rd["ThuTu"])
+                        MaDatCho = rd.GetString(0),
+                        MaSach = rd.GetString(1),
+                        TenSach = rd.GetString(2),
+                        MaBanDoc = rd.GetString(3),
+                        TenBanDoc = rd.GetString(4),
+                        ThoiGianGiuCho = rd.GetDateTime(5),
+                        TrangThai = rd.GetString(6),
+                        ThuTu = rd.GetInt32(7)
                     });
                 }
 

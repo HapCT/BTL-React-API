@@ -20,7 +20,7 @@ namespace QuanLyThueSach.Models
 
         public int ThuTu { get; set; }
     }
-    public class TaoDatChoRequest
+    public class TaoDatChoRequest   
     {
         public string MaSach { get; set; }
 

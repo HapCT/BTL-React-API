@@ -41,7 +41,7 @@ namespace QuanLyThueSach.DAL
                     list.Add(new ThanhToanViewModel
                     {
                         MaThanhToan = rd["MaThanhToan"]?.ToString(),
-                        TenBanDoc = rd["HoTen"]?.ToString(),
+                        TenBanDoc = rd["TenBanDoc"]?.ToString(),
                         SoDienThoai = rd["SoDienThoai"]?.ToString(), // nếu SP có
                         NgayThanhToan = rd["NgayThanhToan"] != DBNull.Value ? Convert.ToDateTime(rd["NgayThanhToan"]) : DateTime.MinValue,
                         SoTien = rd["SoTien"] != DBNull.Value ? Convert.ToDecimal(rd["SoTien"]) : 0,

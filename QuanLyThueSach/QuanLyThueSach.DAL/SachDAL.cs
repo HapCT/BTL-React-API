@@ -2,6 +2,7 @@
 using QuanLyThueSach.Models;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 
 namespace QuanLyThueSach.DAL
 {
@@ -90,7 +91,8 @@ namespace QuanLyThueSach.DAL
                 cmd.Parameters.AddWithValue("@NamXB", suaSach.NamXB);
                 cmd.Parameters.AddWithValue("@NgonNgu", suaSach.NgonNgu);
                 cmd.Parameters.AddWithValue("@SoLuongSach", suaSach.SoLuongSach);
-                cmd.Parameters.AddWithValue("@HinhAnh", suaSach.HinhAnh);
+                cmd.Parameters.AddWithValue("@HinhAnh", (object?)suaSach.HinhAnh ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@HinhAnhCu", (object?)suaSach.HinhAnhCu ?? DBNull.Value);
 
                 return await cmd.ExecuteNonQueryAsync();
             }
