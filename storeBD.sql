@@ -56,7 +56,7 @@ BEGIN
 	VALUES (@MaBanDoc, @SoThe, @HoTen, @Email, @SoDienThoai, @HanThe, N'Hoạt động', 0, @CCCD)
 
 END
-
+SELECT * FROM BanDoc
 -- Sửa bạn đọc 
 CREATE PROCEDURE sp_SuaBanDoc
 	@MaBanDoc NVARCHAR(20),
@@ -171,7 +171,8 @@ BEGIN
 
 END
 GO
-SELECT * FROM TaiKhoan
+SELECT * FROM BanDoc
+
 --Tài Khoản
 --Danh sách tài khoản
 CREATE PROCEDURE sp_HienThiTaiKhoan

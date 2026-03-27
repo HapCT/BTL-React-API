@@ -254,8 +254,7 @@
               "RelativeToolTip": "QuanLyThueSach.Models\\ThanhToanModel.cs",
               "ViewState": "AgIAABYAAAAAAAAAAAAqwDMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-23T07:28:59.668Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T07:28:59.668Z"
             },
             {
               "$type": "Document",
@@ -267,8 +266,7 @@
               "RelativeToolTip": "QuanLyThueSach\\Controllers\\SachController.cs",
               "ViewState": "AgIAADIAAAAAAAAAAAApwHAAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-16T01:21:56.979Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-16T01:21:56.979Z"
             },
             {
               "$type": "Document",
@@ -280,8 +278,7 @@
               "RelativeToolTip": "QuanLyThueSach\\SachModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-20T09:33:45.976Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-20T09:33:45.976Z"
             },
             {
               "$type": "Document",
@@ -293,8 +290,7 @@
               "RelativeToolTip": "QuanLyThueSach.Models\\SachModel.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAYwBsAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-15T13:27:30.762Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-15T13:27:30.762Z"
             },
             {
               "$type": "Document",
@@ -342,8 +338,7 @@
               "RelativeToolTip": "QuanLyThueSach.DAL\\SachDAL.cs",
               "ViewState": "AgIAAEsAAAAAAAAAAAAAwGEAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-15T13:29:16.452Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-15T13:29:16.452Z"
             },
             {
               "$type": "Document",
@@ -355,8 +350,7 @@
               "RelativeToolTip": "QuanLyThueSach\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAACLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-06T07:34:59.635Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-06T07:34:59.635Z"
             },
             {
               "$type": "Document",
@@ -368,8 +362,7 @@
               "RelativeToolTip": "QuanLyThueSach\\Controllers\\ThanhToanController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-23T07:37:09.829Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T07:37:09.829Z"
             },
             {
               "$type": "Document",
@@ -377,9 +370,9 @@
               "Title": "ThanhToanDAL.cs",
               "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\ThanhToanDAL.cs",
               "RelativeDocumentMoniker": "QuanLyThueSach.DAL\\ThanhToanDAL.cs",
-              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\ThanhToanDAL.cs*",
-              "RelativeToolTip": "QuanLyThueSach.DAL\\ThanhToanDAL.cs*",
-              "ViewState": "AgIAABoAAAAAAAAAAAA8wCsAAAAsAAAAAAAAAA==",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\ThanhToanDAL.cs",
+              "RelativeToolTip": "QuanLyThueSach.DAL\\ThanhToanDAL.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAmwCsAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-23T07:33:42.913Z",
               "EditorCaption": ""
