@@ -18,10 +18,22 @@ BEGIN
 	CCCD 
 	FROM BanDoc
 END
-
-
+INSERT INTO TaiKhoan
+(
+    TenTaiKhoan,
+    MatKhau,
+    VaiTro,
+    MaBanDoc
+)
+VALUES
+(
+    'admin',
+    'admin123',
+    N'Admin',
+    NULL
+)
 --Thêm bạn đọc
-CREATE PROCEDURE sp_ThemBanDoc
+CREATE OR ALTER PROCEDURE sp_ThemBanDoc
 	@HoTen NVARCHAR(50), 
 	@Email NVARCHAR(100),
 	@SoDienThoai NVARCHAR(10),
@@ -52,7 +64,16 @@ BEGIN
 		RETURN
 	END
 
-	INSERT INTO BanDoc 
+	INSERT INTO BanDoc (    
+	MaBanDoc,
+    SoThe,
+    HoTen,
+    Email,
+    SoDienThoai,
+    HanThe,
+    TrangThaiThe,
+    DuNo,
+    CCCD)
 	VALUES (@MaBanDoc, @SoThe, @HoTen, @Email, @SoDienThoai, @HanThe, N'Hoạt động', 0, @CCCD)
 
 END
@@ -283,32 +304,40 @@ BEGIN
     )
 END
 GO 
-CREATE PROCEDURE sp_DangNhap
+INSERT INTO TaiKhoan(TenTaiKhoan,
+        MatKhau,
+        VaiTro,
+        MaBanDoc
+		) VALUES
+		('admin', 'admin123', N'Admin')
+CREATE OR ALTER PROCEDURE sp_DangNhap
     @TenTaiKhoan NVARCHAR(20),
     @MatKhau NVARCHAR(255)
 AS
 BEGIN
-	IF NOT EXISTS (
-		SELECT 1 
-		FROM TaiKhoan 
-		WHERE TenTaiKhoan = @TenTaiKhoan 
-		AND MatKhau = @MatKhau
-	)
-	BEGIN
-		PRINT N'Sai tài khoản hoặc mật khẩu'
-		RETURN
-	END
+    -- kiểm tra tài khoản
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM TaiKhoan 
+        WHERE TenTaiKhoan = @TenTaiKhoan 
+        AND MatKhau = @MatKhau
+    )
+    BEGIN
+        SELECT 
+            N'Sai tài khoản hoặc mật khẩu' AS Message,
+            0 AS Status
+        RETURN
+    END
+
+    -- trả dữ liệu user
     SELECT 
         tk.TenTaiKhoan,
+		tk.MatKhau,	
         tk.VaiTro,
-        bd.MaBanDoc,
-        bd.HoTen
+        1 AS Status
     FROM TaiKhoan tk
-    LEFT JOIN BanDoc bd 
-        ON tk.MaBanDoc = bd.MaBanDoc
     WHERE tk.TenTaiKhoan = @TenTaiKhoan
     AND tk.MatKhau = @MatKhau
-
 END
 GO 
 CREATE PROCEDURE sp_DoiMatKhau
