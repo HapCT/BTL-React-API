@@ -304,12 +304,7 @@ BEGIN
     )
 END
 GO 
-INSERT INTO TaiKhoan(TenTaiKhoan,
-        MatKhau,
-        VaiTro,
-        MaBanDoc
-		) VALUES
-		('admin', 'admin123', N'Admin')
+
 CREATE OR ALTER PROCEDURE sp_DangNhap
     @TenTaiKhoan NVARCHAR(20),
     @MatKhau NVARCHAR(255)
@@ -459,21 +454,26 @@ BEGIN
 END
 
 --Sửa thể loại
-CREATE PROCEDURE sp_SuaTheLoai
+CREATE OR ALTER PROCEDURE sp_SuaTheLoai
 	@MaTheLoai NVARCHAR(20),
 	@TenTheLoai NVARCHAR(50),
-	@Mota NVARCHAR(MAX)
+	@MoTa NVARCHAR(MAX)
 AS
 BEGIN
-	IF EXISTS (SELECT 1 FROM TheLoai WHERE TenTheLoai = @TenTheLoai)
-	BEGIN
-		PRINT N'Thể loại đã tồn tại'
-		RETURN
-	END
+	IF EXISTS (
+        SELECT 1 
+        FROM TheLoai 
+        WHERE TenTheLoai = @TenTheLoai
+        AND MaTheLoai != @MaTheLoai
+    )
+    BEGIN
+        PRINT N'Thể loại đã tồn tại'
+        RETURN
+    END
 	UPDATE TheLoai
 	SET
 		TenTheLoai = @TenTheLoai,
-		MoTa = @Mota
+		MoTa = @MoTa
 	WHERE MaTheLoai = @MaTheLoai
 END
 GO

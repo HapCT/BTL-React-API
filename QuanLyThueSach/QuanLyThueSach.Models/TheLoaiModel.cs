@@ -14,12 +14,12 @@ namespace QuanLyThueSach.Models
     }
     public class ThemTheLoai
     {
-        public string TenTheLoai { get; set; } = default!;
+        public string TenTheLoai { get; set; }
         public string MoTa { get; set; }
     }
     public class SuaTheLoai
     {
-        public string TenTheLoai { get; set; } = default!;
+        public string TenTheLoai { get; set; }
         public string MoTa { get; set; }
     }
 }

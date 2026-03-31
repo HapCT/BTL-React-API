@@ -30,7 +30,7 @@ namespace QuanLyThueSach.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> ThemTL(ThemTheLoai theLoai)
+        public async Task<IActionResult> ThemTL([FromBody] ThemTheLoai theLoai)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace QuanLyThueSach.Controllers
             }
         }
         [HttpPut("{maTheLoai}")]
-        public async Task<IActionResult> SuaTL(string maTheLoai, SuaTheLoai theLoai)
+        public async Task<IActionResult> SuaTL(string maTheLoai, [FromBody] SuaTheLoai theLoai)
         {
             try
             {

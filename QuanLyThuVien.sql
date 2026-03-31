@@ -132,3 +132,24 @@ CREATE TABLE ThanhToan
 	GhiChu NVARCHAR(MAX),
 	FOREIGN KEY (MaBanDoc) REFERENCES BanDoc(MaBanDoc)
 )
+EXEC sp_SuaTheLoai 
+    @MaTheLoai = 'TL001',
+    @TenTheLoai = N'Test',
+    @MoTa = N'Test'
+-- Tắt ràng buộc
+EXEC sp_MSforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL';
+
+-- Xóa dữ liệu theo thứ tự
+DELETE FROM Phat;
+DELETE FROM ThanhToan;
+DELETE FROM DatCho;
+DELETE FROM PhieuMuon;
+DELETE FROM BanSao;
+DELETE FROM Sach;
+DELETE FROM TheLoai;
+DELETE FROM KeSach;
+DELETE FROM TaiKhoan;
+DELETE FROM BanDoc;
+
+-- Bật lại ràng buộc
+EXEC sp_MSforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL';
