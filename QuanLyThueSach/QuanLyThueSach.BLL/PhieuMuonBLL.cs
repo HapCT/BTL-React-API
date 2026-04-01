@@ -20,6 +20,7 @@ namespace QuanLyThueSach.BLL
             Task<Respon<string>> TraSachAsync(string maPhieuMuon);
             Task<Respon<string>> GiaHanAsync(string maPhieuMuon, int soNgayThem);
             Task<Respon<string>> HuyAsync(string maPhieuMuon);
+            Task<Respon<HoaDonModel>> TinhTienAsync(string maPhieuMuon);
         }
 
         public class PhieuMuonService : IPhieuMuonServices
@@ -30,7 +31,29 @@ namespace QuanLyThueSach.BLL
             {
                 _repository = repository;
             }
+            public async Task<Respon<HoaDonModel>> TinhTienAsync(string maPhieuMuon)
+            {
+                try
+                {
+                    var data = await _repository.TinhTienAsync(maPhieuMuon);
 
+                    return new Respon<HoaDonModel>
+                    {
+                        StatusCode = 200,
+                        Message = "Tính tiền thành công",
+                        Data = data
+                    };
+                }
+                catch (Exception ex)
+                {
+                    return new Respon<HoaDonModel>
+                    {
+                        StatusCode = 500,
+                        Message = ex.Message,
+                        Data = null
+                    };
+                }
+            }
             // 🔹 Lấy danh sách
             public async Task<Respon<List<PhieuMuonViewModel>>> GetAsync()
             {
@@ -124,6 +147,7 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
+                
             // 🔹 Duyệt mượn
             public async Task<Respon<string>> DuyetMuonAsync(string maPhieuMuon)
             {

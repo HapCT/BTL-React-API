@@ -51,6 +51,25 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("tinh-tien/{maPhieuMuon}")]
+        public async Task<IActionResult> TinhTien(string maPhieuMuon)
+        {
+            try
+            {
+                var response = await _phieuMuonService.TinhTienAsync(maPhieuMuon);
+
+                if (response.StatusCode == 200)
+                {
+                    return Ok(response.Data); // 🔥 trả trực tiếp
+                }
+
+                return BadRequest(response.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         // 🔹 3. Đăng ký mượn
         [HttpPost("dang-ky")]
@@ -118,9 +137,10 @@ namespace QuanLyThueSach.Controllers
             {
                 var response = await _phieuMuonService.TraSachAsync(maPhieuMuon);
 
+
                 if (response.StatusCode == 200)
                 {
-                    return Ok(response.Message);
+                    return Ok(response.Data);
                 }
 
                 return BadRequest(response.Message);
@@ -133,11 +153,11 @@ namespace QuanLyThueSach.Controllers
 
         // 🔹 6. Gia hạn
         [HttpPut("gia-han/{maPhieuMuon}")]
-        public async Task<IActionResult> GiaHan(string maPhieuMuon, [FromBody] int soNgayThem)
+        public async Task<IActionResult> GiaHan(string maPhieuMuon, [FromBody] GiaHanPhieuMuon request)
         {
             try
             {
-                var response = await _phieuMuonService.GiaHanAsync(maPhieuMuon, soNgayThem);
+                var response = await _phieuMuonService.GiaHanAsync(maPhieuMuon, request.SoNgayThem);
 
                 if (response.StatusCode == 200)
                 {

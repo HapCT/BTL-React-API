@@ -551,8 +551,8 @@
         "IsRequired": true
       },
       {
-        "Name": "soNgayThem",
-        "Type": "System.Int32",
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.GiaHanPhieuMuon",
         "IsRequired": true
       }
     ],
@@ -563,6 +563,22 @@
     "Method": "Huy",
     "RelativePath": "api/PhieuMuon/huy/{maPhieuMuon}",
     "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhieuMuon",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "TinhTien",
+    "RelativePath": "api/PhieuMuon/tinh-tien/{maPhieuMuon}",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -892,6 +908,38 @@
       {
         "Name": "maThanhToan",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThanhToanController",
+    "Method": "Preview",
+    "RelativePath": "api/ThanhToan/preview/{maPhieuMuon}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maPhieuMuon",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThanhToanController",
+    "Method": "ThanhToan",
+    "RelativePath": "api/ThanhToan/thanh-toan",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.ThanhToanRequest",
         "IsRequired": true
       }
     ],

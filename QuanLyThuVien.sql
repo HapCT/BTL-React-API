@@ -168,3 +168,6 @@ DELETE FROM BanDoc;
 
 -- Bật lại ràng buộc
 EXEC sp_MSforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL';
+
+
+SELECT * FROM ThanhToan

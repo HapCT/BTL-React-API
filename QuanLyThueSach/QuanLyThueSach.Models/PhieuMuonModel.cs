@@ -25,6 +25,12 @@ namespace QuanLyThueSach.Models
         public int SoLanGiaHan { get; set; }
         public string TrangThai { get; set; }
     }
+    public class HoaDonModel
+    {
+        public decimal TienThue { get; set; }
+        public decimal TienPhat { get; set; }
+        public decimal TongTien { get; set; }
+    }
     public class TraSach 
     {
         public DateTime NgayTra { get; set; }

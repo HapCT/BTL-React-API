@@ -44,8 +44,9 @@ namespace QuanLyThueSach.Models
     }
     public class ThanhToanRequest
     {
-        public string MaPhat { get; set; }
+        public string MaPhieuMuon { get; set; }
 
         public string HinhThucThanhToan { get; set; }
+        public string GhiChu { get; set; }
     }
 }

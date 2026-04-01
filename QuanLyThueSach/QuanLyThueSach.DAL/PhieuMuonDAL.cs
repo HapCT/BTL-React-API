@@ -18,6 +18,7 @@ namespace QuanLyThueSach.DAL
             Task<int> GiaHanAsync(string maPhieuMuon, int soNgayThem);
             Task<int> HuyAsync(string maPhieuMuon);
             Task<bool> XoaPhieuMuon(string maPhieuMuon);
+            Task<HoaDonModel> TinhTienAsync(string maPhieuMuon);
         }
 
         public class PhieuMuonRepository : IPhieuMuonRepository
@@ -28,7 +29,30 @@ namespace QuanLyThueSach.DAL
             {
                 _con = configuration.GetConnectionString("DefaultConnection");
             }
+            public async Task<HoaDonModel> TinhTienAsync(string maPhieuMuon)
+            {
+                using var connect = new SqlConnection(_con);
+                await connect.OpenAsync();
 
+                using var cmd = new SqlCommand("sp_TinhTien", connect);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@MaPhieuMuon", maPhieuMuon);
+
+                using var rd = await cmd.ExecuteReaderAsync();
+
+                if (await rd.ReadAsync())
+                {
+                    return new HoaDonModel
+                    {
+                        TienThue = rd.GetDecimal(0),
+                        TienPhat = rd.GetDecimal(1),
+                        TongTien = rd.GetDecimal(2)
+                    };
+                }
+
+                return null;
+            }
             // 🔹 Hiển thị tất cả (JOIN ra ViewModel)
             public async Task<List<PhieuMuonViewModel>> GetAsync()
             {

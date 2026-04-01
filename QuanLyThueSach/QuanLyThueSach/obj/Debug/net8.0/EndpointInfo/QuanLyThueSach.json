@@ -773,6 +773,28 @@
         }
       }
     },
+    "/api/PhieuMuon/tinh-tien/{maPhieuMuon}": {
+      "get": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "parameters": [
+          {
+            "name": "maPhieuMuon",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/PhieuMuon/dang-ky": {
       "post": {
         "tags": [
@@ -898,20 +920,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/GiaHanPhieuMuon"
               }
             },
             "text/json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/GiaHanPhieuMuon"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/GiaHanPhieuMuon"
               }
             }
           }
@@ -1379,6 +1398,37 @@
         }
       }
     },
+    "/api/ThanhToan/thanh-toan": {
+      "post": {
+        "tags": [
+          "ThanhToan"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThanhToanRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThanhToanRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThanhToanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/ThanhToan/{maThanhToan}": {
       "get": {
         "tags": [
@@ -1387,6 +1437,28 @@
         "parameters": [
           {
             "name": "maThanhToan",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ThanhToan/preview/{maPhieuMuon}": {
+      "get": {
+        "tags": [
+          "ThanhToan"
+        ],
+        "parameters": [
+          {
+            "name": "maPhieuMuon",
             "in": "path",
             "required": true,
             "schema": {
@@ -2222,6 +2294,16 @@
         },
         "additionalProperties": false
       },
+      "GiaHanPhieuMuon": {
+        "type": "object",
+        "properties": {
+          "soNgayThem": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "MuonOline": {
         "type": "object",
         "properties": {
@@ -2345,6 +2427,24 @@
           "hanTra": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ThanhToanRequest": {
+        "type": "object",
+        "properties": {
+          "maPhieuMuon": {
+            "type": "string",
+            "nullable": true
+          },
+          "hinhThucThanhToan": {
+            "type": "string",
+            "nullable": true
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

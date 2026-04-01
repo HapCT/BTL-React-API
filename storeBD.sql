@@ -1585,7 +1585,7 @@ BEGIN
 END
 
 --Phạt
-CREATE PROCEDURE spPhat
+CREATE OR ALTER PROCEDURE spPhat
     @MaPhieuMuon NVARCHAR(20),
     @LyDoPhat NVARCHAR(MAX) = NULL
 AS
@@ -1600,32 +1600,51 @@ BEGIN
         @MaPhat NVARCHAR(20),
         @MaBanDoc NVARCHAR(20)
 
-    -- Lấy thông tin phiếu mượn
+    -- ❌ Kiểm tra tồn tại
+    IF NOT EXISTS (SELECT 1 FROM PhieuMuon WHERE MaPhieuMuon = @MaPhieuMuon)
+    BEGIN
+        PRINT N'Phiếu mượn không tồn tại'
+        RETURN
+    END
+
+    -- ❌ Không cho tạo phạt trùng
+    IF EXISTS (SELECT 1 FROM Phat WHERE MaPhieuMuon = @MaPhieuMuon AND TrangThai != N'Đã huỷ')
+    BEGIN
+        PRINT N'Phiếu này đã có phạt'
+        RETURN
+    END
+
+    -- Lấy thông tin
     SELECT 
         @HanTra = HanTra,
         @MaBanDoc = MaBanDoc
     FROM PhieuMuon
     WHERE MaPhieuMuon = @MaPhieuMuon
 
-    -- Tính số ngày trễ
+    -- Tính trễ
     IF (@NgayTra > @HanTra)
         SET @SoNgayTre = DATEDIFF(DAY, @HanTra, @NgayTra)
 
-    -- Tính tiền phạt trễ hạn
     SET @SoTien = @SoNgayTre * 5000
 
-    -- Nếu có lý do thêm (hỏng/mất)
+    -- Thêm lý do
     IF (@LyDoPhat LIKE N'%hỏng%')
-        SET @SoTien = @SoTien + 50000
+        SET @SoTien += 50000
 
     IF (@LyDoPhat LIKE N'%mất%')
-        SET @SoTien = @SoTien + 200000
+        SET @SoTien += 200000
 
-    -- Tạo mã phạt (tự tăng đơn giản)
-    SELECT @MaPhat = 'P' + RIGHT('0000' + CAST(COUNT(*) + 1 AS VARCHAR), 4)
-    FROM Phat
+    -- ❗ Nếu không có tiền phạt thì bỏ qua
+    IF (@SoTien = 0)
+    BEGIN
+        PRINT N'Không có vi phạm'
+        RETURN
+    END
 
-    -- Insert vào bảng Phạt
+    -- ✅ Tạo mã bằng NEWID tránh trùng
+    SET @MaPhat = 'P' + REPLACE(LEFT(NEWID(), 8), '-', '')
+
+    -- Insert
     INSERT INTO Phat
     (
         MaPhat,
@@ -1645,12 +1664,13 @@ BEGIN
         N'Chưa thanh toán'
     )
 
-    -- Cập nhật dư nợ bạn đọc
+    -- Update dư nợ
     UPDATE BanDoc
     SET DuNo = ISNULL(DuNo, 0) + @SoTien
     WHERE MaBanDoc = @MaBanDoc
 
 END
+GO
 GO
 EXEC spPhat 
     @MaPhieuMuon = 'PM001',
@@ -1728,79 +1748,125 @@ BEGIN
         AND TrangThai = N'Chưa thanh toán'
 END
 GO
---
-
+EXEC sp_ThanhToanPhat 'PM006', N'Tiền mặt'
+EXEC sp_PreviewThanhToan @MaPhieuMuon = 'PM009'
+SELECT * fROM Phat
 ALTER PROCEDURE sp_ThanhToanPhat
-    @MaPhat NVARCHAR(20),
-    @HinhThucThanhToan NVARCHAR(20)
+    @MaPhieuMuon NVARCHAR(20),
+    @HinhThucThanhToan NVARCHAR(15),
+    @GhiChu NVARCHAR(MAX) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
+    BEGIN TRAN
 
     BEGIN TRY
-        BEGIN TRAN
 
         DECLARE 
-            @SoTien DECIMAL,
             @MaBanDoc NVARCHAR(20),
-            @MaThanhToan NVARCHAR(20)
+            @NgayMuon DATE,
+            @HanTra DATE,
+            @TienThue DECIMAL = 0,
+            @TienPhat DECIMAL = 0,
+            @TongTien DECIMAL = 0,
+            @GiaMotNgay DECIMAL = 5000,
+            @MaThanhToan NVARCHAR(20),
+            @SoNgayMuon INT
 
-        -- Lấy dữ liệu
-        SELECT 
-            @SoTien = p.SoTien,
-            @MaBanDoc = bd.MaBanDoc
-        FROM Phat p
-        JOIN PhieuMuon pm ON p.MaPhieuMuon = pm.MaPhieuMuon
-        JOIN BanDoc bd ON pm.MaBanDoc = bd.MaBanDoc
-        WHERE p.MaPhat = @MaPhat
-          AND p.TrangThai = N'Chưa thanh toán'
-
-        IF @SoTien IS NULL
+        -- ❌ kiểm tra tồn tại
+        IF NOT EXISTS (SELECT 1 FROM PhieuMuon WHERE MaPhieuMuon = @MaPhieuMuon)
         BEGIN
+            RAISERROR(N'Phiếu mượn không tồn tại',16,1)
             ROLLBACK
             RETURN
         END
 
-        -- Update phạt
+        -- 🔥 lấy info
+        SELECT 
+            @MaBanDoc = MaBanDoc,
+            @NgayMuon = NgayMuon,
+            @HanTra = HanTra
+        FROM PhieuMuon
+        WHERE MaPhieuMuon = @MaPhieuMuon
+
+        IF (@NgayMuon IS NULL)
+        BEGIN
+            RAISERROR(N'Phiếu chưa được duyệt',16,1)
+            ROLLBACK
+            RETURN
+        END
+
+        -- 🔥 tính ngày mượn
+        SET @SoNgayMuon = DATEDIFF(DAY, @NgayMuon, GETDATE())
+        IF (@SoNgayMuon <= 0) SET @SoNgayMuon = 1
+
+        SET @TienThue = @SoNgayMuon * @GiaMotNgay
+
+        -- 🔥 tiền phạt
+        SELECT @TienPhat = ISNULL(SUM(SoTien),0)
+        FROM Phat
+        WHERE MaPhieuMuon = @MaPhieuMuon
+        AND TrangThai = N'Chưa thanh toán'
+
+        SET @TongTien = @TienThue + @TienPhat
+
+        IF (@TongTien = 0)
+        BEGIN
+            RAISERROR(N'Không có khoản cần thanh toán',16,1)
+            ROLLBACK
+            RETURN
+        END
+
+        -- ✅ dùng NEWID chống trùng
+        SET @MaThanhToan = 'TT' + REPLACE(LEFT(NEWID(), 8), '-', '')
+
+        -- 🔥 insert
+        INSERT INTO ThanhToan
+        (
+            MaThanhToan,
+            MaBanDoc,
+            NgayThanhToan,
+            SoTien,
+            HinhThucThanhToan,
+            GhiChu
+        )
+        VALUES
+        (
+            @MaThanhToan,
+            @MaBanDoc,
+            GETDATE(),
+            @TongTien,
+            @HinhThucThanhToan,
+            @GhiChu
+        )
+
+        -- 🔥 update phạt
         UPDATE Phat
         SET TrangThai = N'Đã thanh toán'
-        WHERE MaPhat = @MaPhat
+        WHERE MaPhieuMuon = @MaPhieuMuon
+        AND TrangThai = N'Chưa thanh toán'
 
-        -- Trừ nợ
+        -- 🔥 trừ dư nợ
         UPDATE BanDoc
-        SET DuNo = ISNULL(DuNo,0) - @SoTien
+        SET DuNo = ISNULL(DuNo,0) - @TienPhat
         WHERE MaBanDoc = @MaBanDoc
 
-        -- Tạo mã thanh toán
-        SELECT @MaThanhToan = 'TT' + RIGHT('0000' + CAST(COUNT(*) + 1 AS VARCHAR), 4)
-        FROM ThanhToan
-
-        -- 🔥 Lưu hình thức thanh toán
-        INSERT INTO ThanhToan
-(
-    MaThanhToan,
-    MaBanDoc,
-    NgayThanhToan,
-    SoTien,
-    HinhThucThanhToan,
-    GhiChu,
-    TrangThai
-)
-VALUES
-(
-    @MaThanhToan,
-    @MaBanDoc,
-    GETDATE(),
-    @SoTien,
-    @HinhThucThanhToan,
-    N'Thanh toán phạt ' + @MaPhat,
-    N'Đã thanh toán'
-)
-
         COMMIT
+
+        -- 🔥 trả kết quả
+        SELECT 
+            @MaThanhToan AS MaThanhToan,
+            @TienThue AS TienThue,
+            @TienPhat AS TienPhat,
+            @TongTien AS TongTien
+
     END TRY
     BEGIN CATCH
         ROLLBACK
+        DECLARE @ErrorMessage NVARCHAR(4000)
+    SET @ErrorMessage = ERROR_MESSAGE()
+
+    RAISERROR(@ErrorMessage, 16, 1)
     END CATCH
 END
 GO
@@ -1840,7 +1906,7 @@ BEGIN
     JOIN BanDoc bd ON tt.MaBanDoc = bd.MaBanDoc
     ORDER BY tt.NgayThanhToan DESC
 END
-GO SELECT * FROM ThanhToan
+GO
 ALTER PROCEDURE sp_HuyThanhToan
     @MaThanhToan NVARCHAR(20)
 AS
@@ -1880,3 +1946,104 @@ SET TrangThai = N'Chưa thanh toán'
 WHERE MaPhat = 'P0001'
 
 SELECT * FROM ThanhToan
+
+--Tính tiền 
+CREATE PROCEDURE sp_TinhTien
+    @MaPhieuMuon NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE 
+        @NgayMuon DATE,
+        @HanTra DATE,
+        @SoNgayMuon INT,
+        @TienThue DECIMAL = 0,
+        @TienPhat DECIMAL = 0,
+        @TongTien DECIMAL = 0,
+        @GiaMotNgay DECIMAL = 5000 -- 🔥 chỉnh tùy bạn
+
+    -- lấy dữ liệu
+    SELECT 
+        @NgayMuon = NgayMuon,
+        @HanTra = HanTra
+    FROM PhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon
+
+    -- ❌ nếu chưa duyệt
+    IF (@NgayMuon IS NULL)
+    BEGIN
+        RAISERROR(N'Phiếu chưa được duyệt',16,1)
+        RETURN
+    END
+
+    -- 🔥 số ngày mượn
+    SET @SoNgayMuon = DATEDIFF(DAY, @NgayMuon, GETDATE())
+
+    IF (@SoNgayMuon <= 0)
+        SET @SoNgayMuon = 1
+
+    -- 🔥 tiền thuê
+    SET @TienThue = @SoNgayMuon * @GiaMotNgay
+
+    -- 🔥 tiền phạt
+    IF (GETDATE() > @HanTra)
+    BEGIN
+        SET @TienPhat = DATEDIFF(DAY, @HanTra, GETDATE()) * 5000
+    END
+
+    SET @TongTien = @TienThue + @TienPhat
+
+    -- 🔥 trả dữ liệu
+    SELECT 
+        @TienThue AS TienThue,
+        @TienPhat AS TienPhat,
+        @TongTien AS TongTien
+END
+
+CREATE PROCEDURE sp_PreviewThanhToan
+    @MaPhieuMuon NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE 
+        @NgayMuon DATE,
+        @HanTra DATE,
+        @TienThue DECIMAL = 0,
+        @TienPhat DECIMAL = 0,
+        @TongTien DECIMAL = 0,
+        @SoNgayMuon INT
+
+    -- lấy phiếu
+    SELECT 
+        @NgayMuon = NgayMuon,
+        @HanTra = HanTra
+    FROM PhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon
+
+    IF (@NgayMuon IS NULL)
+    BEGIN
+        RAISERROR(N'Phiếu chưa được duyệt',16,1)
+        RETURN
+    END
+
+    -- tiền thuê
+    SET @SoNgayMuon = DATEDIFF(DAY, @NgayMuon, GETDATE())
+    IF (@SoNgayMuon <= 0) SET @SoNgayMuon = 1
+
+    SET @TienThue = @SoNgayMuon * 5000
+
+    -- 🔥 LẤY PHẠT TỪ BẢNG PHAT
+    SELECT @TienPhat = ISNULL(SUM(SoTien),0)
+    FROM Phat
+    WHERE MaPhieuMuon = @MaPhieuMuon
+    AND TrangThai = N'Chưa thanh toán'
+
+    SET @TongTien = @TienThue + @TienPhat
+
+    SELECT 
+        @TienThue AS TienThue,
+        @TienPhat AS TienPhat,
+        @TongTien AS TongTien
+END

@@ -8,6 +8,7 @@ namespace QuanLyThueSach.BLL
         {
             Task<Respon<List<ThanhToanViewModel>>> GetAsync();
             Task<Respon<ThanhToanViewModel?>> GetHoaDonAsync(string maThanhToan);
+            Task<Respon<int>> ThanhToanAsync(ThanhToanRequest request);
             Task<Respon<int>> HuyThanhToanAsync(string maThanhToan);
         }
 
@@ -44,7 +45,28 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
-
+            public async Task<Respon<int>> ThanhToanAsync(ThanhToanRequest request)
+            {
+                try
+                {
+                    var result = await _repository.ThanhToanAsync(request);
+                    return new Respon<int>
+                    {
+                        StatusCode = 200,
+                        Message = "Thanh toán thành công",
+                        Data = result
+                    };
+                }
+                catch (Exception ex)
+                {
+                    return new Respon<int>
+                    {
+                        StatusCode = 500,
+                        Message = $"Lỗi: {ex.Message}",
+                        Data = 0
+                    };
+                }
+            }
             // 🔹 Lấy hoá đơn theo mã
             public async Task<Respon<ThanhToanViewModel?>> GetHoaDonAsync(string maThanhToan)
             {
