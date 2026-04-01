@@ -1128,7 +1128,7 @@ BEGIN
 END
 
 --Duyệt mượn 
-CREATE PROCEDURE sp_DuyetMuon
+CREATE OR ALTER PROCEDURE sp_DuyetMuon
     @MaPhieuMuon NVARCHAR(20)
 AS
 BEGIN
@@ -1154,6 +1154,7 @@ BEGIN
         UPDATE PhieuMuon
         SET 
             NgayMuon = GETDATE(),
+			HanTra = DATEADD(DAY, 7, GETDATE()), 
             TrangThai = N'Đã nhận sách'
         WHERE MaPhieuMuon = @MaPhieuMuon;
 
@@ -1172,25 +1173,49 @@ BEGIN
     END CATCH
 END
 --Tạo phiếu mượn off
-CREATE PROCEDURE sp_TaoPhieuMuon_Offline
-    @MaPhieuMuon NVARCHAR(20),
+CREATE OR ALTER PROCEDURE sp_TaoPhieuMuon_Offline
     @MaBanDoc NVARCHAR(20),
     @MaBanSao NVARCHAR(20),
     @NgayMuon DATE,
     @HanTra DATE
 AS
 BEGIN
-	SELECT @MaPhieuMuon =
-		'PM' + RIGHT('000' +
-		CAST(ISNULL(MAX(CAST(SUBSTRING(MaPhieuMuon,2,10) AS INT)),0) + 1 AS NVARCHAR),3)
-	FROM PhieuMuon
-    IF EXISTS (
-        SELECT 1 FROM BanSao
-        WHERE MaBanSao = @MaBanSao
-        AND TrangThai = 0
-    )
-    BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @MaPhieuMuon NVARCHAR(20);
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- tạo mã phiếu
+        SELECT @MaPhieuMuon =
+            'PM' + RIGHT('000' +
+            CAST(ISNULL(MAX(CAST(SUBSTRING(MaPhieuMuon,3,10) AS INT)),0) + 1 AS NVARCHAR),3)
+        FROM PhieuMuon WITH (UPDLOCK, HOLDLOCK);
+
+        -- kiểm tra bản sao còn trong kho
+        IF NOT EXISTS (
+            SELECT 1 FROM BanSao
+            WHERE MaBanSao = @MaBanSao
+            AND TrangThai = N'Trong kho'
+        )
+        BEGIN
+            RAISERROR(N'Sách không khả dụng',16,1);
+            ROLLBACK TRAN;
+            RETURN;
+        END
+
+        -- thêm phiếu
         INSERT INTO PhieuMuon
+        (
+            MaPhieuMuon,
+            MaBanDoc,
+            MaBanSao,
+            NgayMuon,
+            HanTra,
+            SoLanGiaHan,
+            TrangThai
+        )
         VALUES
         (
             @MaPhieuMuon,
@@ -1200,16 +1225,19 @@ BEGIN
             @HanTra,
             0,
             N'Đã nhận sách'
-        )
+        );
 
+        -- cập nhật bản sao
         UPDATE BanSao
-        SET TrangThai = 1
-        WHERE MaBanSao = @MaBanSao
-    END
-    ELSE
-    BEGIN
-        RAISERROR(N'Sách không khả dụng',16,1)
-    END
+        SET TrangThai = N'Đang mượn'
+        WHERE MaBanSao = @MaBanSao;
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRAN;
+        THROW;
+    END CATCH
 END
 
 --Trả sách

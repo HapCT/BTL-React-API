@@ -507,6 +507,22 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
+    "Method": "DangKyMuonOff",
+    "RelativePath": "api/PhieuMuon/dang-ky-off",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.TaoPhieuMuonOfflineRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.PhieuMuonController",
     "Method": "DuyetMuon",
     "RelativePath": "api/PhieuMuon/duyet/{maPhieuMuon}",
     "HttpMethod": "PUT",

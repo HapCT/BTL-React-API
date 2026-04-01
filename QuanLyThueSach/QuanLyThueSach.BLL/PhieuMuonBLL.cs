@@ -15,6 +15,7 @@ namespace QuanLyThueSach.BLL
             Task<Respon<List<PhieuMuonViewModel>>> GetByBanDocAsync(string maBanDoc);
             Task<Respon<object>> XoaPhieuMuonAsync(string maPhieuMuon);
             Task<Respon<string>> DangKyMuonAsync(MuonOline model);
+            Task<Respon<string>> DangKyMuonOff(TaoPhieuMuonOfflineRequest request);
             Task<Respon<string>> DuyetMuonAsync(string maPhieuMuon);
             Task<Respon<string>> TraSachAsync(string maPhieuMuon);
             Task<Respon<string>> GiaHanAsync(string maPhieuMuon, int soNgayThem);
@@ -101,7 +102,28 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
-
+            public async Task<Respon<string>> DangKyMuonOff(TaoPhieuMuonOfflineRequest request)
+            {
+                try
+                {
+                    await _repository.DangKyMuonOff(request);
+                    return new Respon<string>
+                    {
+                        StatusCode = 200,
+                        Message = "Đăng ký mượn offline thành công",
+                        Data = null
+                    };
+                }
+                catch (Exception ex)
+                {
+                    return new Respon<string>
+                    {
+                        StatusCode = 500,
+                        Message = ex.Message,
+                        Data = null
+                    };
+                }
+            }
             // 🔹 Duyệt mượn
             public async Task<Respon<string>> DuyetMuonAsync(string maPhieuMuon)
             {

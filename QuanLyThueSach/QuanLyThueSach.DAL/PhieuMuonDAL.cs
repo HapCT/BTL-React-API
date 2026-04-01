@@ -12,6 +12,7 @@ namespace QuanLyThueSach.DAL
             Task<List<PhieuMuonViewModel>> GetAsync();
             Task<List<PhieuMuonViewModel>> TimTheoBanDocAsync(string maBanDoc);
             Task<int> DangKyMuonAsync(MuonOline muonOnline);
+            Task<int> DangKyMuonOff (TaoPhieuMuonOfflineRequest request);
             Task<int> DuyetMuonAsync(string maPhieuMuon);
             Task<int> TraSachAsync(string maPhieuMuon);
             Task<int> GiaHanAsync(string maPhieuMuon, int soNgayThem);
@@ -109,7 +110,17 @@ namespace QuanLyThueSach.DAL
 
                 return await cmd.ExecuteNonQueryAsync();
             }
-
+            public async Task<int> DangKyMuonOff(TaoPhieuMuonOfflineRequest request)
+            {
+                using var connect = new SqlConnection(_con);
+                await connect.OpenAsync();
+                using var cmd = new SqlCommand("sp_DangKyMuonOffline", connect);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@MaBanDoc", request.MaBanDoc);
+                cmd.Parameters.AddWithValue("@MaBanSao", request.MaBanSao);
+                cmd.Parameters.AddWithValue("@HanTra", request.HanTra);
+                return await cmd.ExecuteNonQueryAsync();
+            }
             //  Duyệt mượn
             public async Task<int> DuyetMuonAsync(string maPhieuMuon)
             {

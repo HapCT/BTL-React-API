@@ -22,6 +22,20 @@ CREATE TABLE BanDoc
 	)
 )
 GO
+INSERT INTO TaiKhoan
+(
+    TenTaiKhoan,
+    MatKhau,
+    VaiTro,
+    MaBanDoc
+)
+VALUES
+(
+    'admin',
+    '123456',
+    N'Admin',
+    NULL
+);
 CREATE TABLE TaiKhoan
 (
 	TenTaiKhoan NVARCHAR(20) PRIMARY KEY,
@@ -107,6 +121,7 @@ CREATE TABLE DatCho
 	FOREIGN KEY (MaSach) REFERENCES Sach(MaSach),
 	FOREIGN KEY (MaBanDoc) REFERENCES BanDoc(MaBanDoc)
 )
+EXEC sp_DatCho 'BD001', 'S002';
 
 GO
 CREATE TABLE Phat

@@ -72,7 +72,23 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
+        [HttpPost("dang-ky-off")]
+        public async Task<IActionResult> DangKyMuonOff([FromBody] TaoPhieuMuonOfflineRequest request)
+        {
+            try
+            {
+                var response = await _phieuMuonService.DangKyMuonOff(request);
+                if (response.StatusCode == 200)
+                {
+                    return Ok(response.Message);
+                }
+                return BadRequest(response.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         // 🔹 4. Duyệt mượn
         [HttpPut("duyet/{maPhieuMuon}")]
         public async Task<IActionResult> DuyetMuon(string maPhieuMuon)

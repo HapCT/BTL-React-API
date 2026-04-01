@@ -804,6 +804,37 @@
         }
       }
     },
+    "/api/PhieuMuon/dang-ky-off": {
+      "post": {
+        "tags": [
+          "PhieuMuon"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaoPhieuMuonOfflineRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaoPhieuMuonOfflineRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaoPhieuMuonOfflineRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/PhieuMuon/duyet/{maPhieuMuon}": {
       "put": {
         "tags": [
@@ -2296,6 +2327,24 @@
           "lyDoPhat": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TaoPhieuMuonOfflineRequest": {
+        "type": "object",
+        "properties": {
+          "maBanDoc": {
+            "type": "string",
+            "nullable": true
+          },
+          "maBanSao": {
+            "type": "string",
+            "nullable": true
+          },
+          "hanTra": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false

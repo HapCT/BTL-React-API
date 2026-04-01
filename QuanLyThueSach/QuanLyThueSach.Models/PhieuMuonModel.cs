@@ -39,7 +39,12 @@ namespace QuanLyThueSach.Models
         public string MaBanSao { get; set; } 
         public DateTime HanTra { get; set; }
     }
- 
+    public class TaoPhieuMuonOfflineRequest
+    {
+        public string MaBanDoc { get; set; }
+        public string MaBanSao { get; set; }
+        public DateTime HanTra { get; set; }
+    }
     public class PhieuMuonViewModel
     {
         public string MaPhieuMuon { get; set; }
