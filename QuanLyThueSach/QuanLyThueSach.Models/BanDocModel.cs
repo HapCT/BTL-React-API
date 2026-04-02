@@ -25,6 +25,7 @@ namespace QuanLyThueSach.Models
         public string SoDienThoai { get; set; } = default!;
         public DateTime HanThe { get; set; } 
         public string CCCD { get; set; } = default!;
+        public string TrangThaiThe { get; set; } = "ACTIVE";
 
     }
     public class UpdateBanDoc

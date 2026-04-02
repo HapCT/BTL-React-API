@@ -138,10 +138,11 @@ namespace QuanLyThueSach.DAL
             {
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
-                using var cmd = new SqlCommand("sp_DangKyMuonOffline", connect);
+                using var cmd = new SqlCommand("sp_TaoPhieuMuon_Offline", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@MaBanDoc", request.MaBanDoc);
                 cmd.Parameters.AddWithValue("@MaBanSao", request.MaBanSao);
+                cmd.Parameters.AddWithValue("@NgayMuon", request.NgayMuon);
                 cmd.Parameters.AddWithValue("@HanTra", request.HanTra);
                 return await cmd.ExecuteNonQueryAsync();
             }

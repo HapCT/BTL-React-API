@@ -49,6 +49,7 @@ namespace QuanLyThueSach.Models
     {
         public string MaBanDoc { get; set; }
         public string MaBanSao { get; set; }
+        public DateTime NgayMuon { get; set; } 
         public DateTime HanTra { get; set; }
     }
     public class PhieuMuonViewModel

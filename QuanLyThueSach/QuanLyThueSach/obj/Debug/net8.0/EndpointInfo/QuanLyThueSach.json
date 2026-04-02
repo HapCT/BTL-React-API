@@ -1722,6 +1722,10 @@
           "cccd": {
             "type": "string",
             "nullable": true
+          },
+          "trangThaiThe": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2423,6 +2427,10 @@
           "maBanSao": {
             "type": "string",
             "nullable": true
+          },
+          "ngayMuon": {
+            "type": "string",
+            "format": "date-time"
           },
           "hanTra": {
             "type": "string",

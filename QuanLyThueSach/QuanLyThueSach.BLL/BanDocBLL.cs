@@ -83,16 +83,30 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
+            private string MapTrangThai(string input)
+            {
+                return input switch
+                {
+                    "ACTIVE" => "Hoạt động",
+                    "LOCKED" => "Bị Khoá",
+                    "EXPIRED" => "Hết hạn",
+                    "INACTIVE" => "Ngừng sử dụng",
+                    _ => throw new Exception("Trạng thái không hợp lệ")
+                };
+            }
             public async Task<List<BanDocModel>> SearchBanDocAsync(string tuKhoa)
             {
                 return await _respository.SearchBanDocAsync(tuKhoa);
             }
             public async Task<int> CreateAsync(CreateBanDoc createBanDoc)
             {
+                var trangThai = MapTrangThai(createBanDoc.TrangThaiThe);
+                createBanDoc.TrangThaiThe = trangThai;
                 return await _respository.CreateAsync(createBanDoc);
             }
             public async Task<int> UpdateAsync(string maBanDoc, UpdateBanDoc updateBanDoc)
             {
+                updateBanDoc.TrangThaiThe = MapTrangThai(updateBanDoc.TrangThaiThe);
                 return await _respository.UpdateAsync(maBanDoc, updateBanDoc);
             }
             public async Task<int> DeleteAsync(string maBanDoc)

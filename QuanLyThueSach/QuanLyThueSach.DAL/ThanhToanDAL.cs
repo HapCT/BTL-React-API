@@ -11,7 +11,7 @@ namespace QuanLyThueSach.DAL
         {
             Task<List<ThanhToanViewModel>> GetAsync();
             Task<ThanhToanViewModel?> GetHoaDonAsync(string maThanhToan);
-            Task<int> ThanhToanAsync(ThanhToanRequest request);
+            Task<object> ThanhToanAsync(ThanhToanRequest request);
             Task<int> HuyThanhToanAsync(string maThanhToan);
         }
 
@@ -101,16 +101,32 @@ namespace QuanLyThueSach.DAL
 
                 return await cmd.ExecuteNonQueryAsync();
             }
-            public async Task<int> ThanhToanAsync(ThanhToanRequest request)
+            public async Task<object> ThanhToanAsync(ThanhToanRequest request)
             {
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
+
                 using var cmd = new SqlCommand("sp_ThanhToanPhat", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", request.MaPhieuMuon);
-                cmd.Parameters.AddWithValue("@HinhThucThanhToan", request.HinhThucThanhToan);   
+                cmd.Parameters.AddWithValue("@HinhThucThanhToan", request.HinhThucThanhToan);
                 cmd.Parameters.AddWithValue("@GhiChu", request.GhiChu ?? (object)DBNull.Value);
-                return await cmd.ExecuteNonQueryAsync();
+
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    return new
+                    {
+                        MaThanhToan = reader["MaThanhToan"],
+                        TienThue = reader["TienThue"],
+                        TienPhat = reader["TienPhat"],
+                        TongTien = reader["TongTien"]
+                    };
+                }
+
+                return null;
             }
         }
     }
