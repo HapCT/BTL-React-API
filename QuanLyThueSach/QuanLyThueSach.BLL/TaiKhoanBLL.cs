@@ -18,6 +18,8 @@ namespace QuanLyThueSach.BLL
             Task<Respon<List<TaiKhoanModel>>> SearchAsync(string tuKhoa);
             Task<Respon<int>> DoiMatKhauAsync(string tenTaiKhoan, string matKhauCu, string matKhauMoi);
             Task<Respon<int>> XoaTaiKhoanAsync(string tenTaiKhoan);
+            Task<Respon<int>> CreateAsync(CreateTaiKhoan model);
+
         }
         public class TaiKhoanService : ITaiKhoanServices
         {
@@ -122,7 +124,7 @@ namespace QuanLyThueSach.BLL
                 try
                 {
                     var list = await _repository.SearchAsync(tuKhoa);
-                    if(tuKhoa == null || list.Count == 0)
+                    if (tuKhoa == null || list.Count == 0)
                     {
                         return new Respon<List<TaiKhoanModel>>
                         {
@@ -130,14 +132,14 @@ namespace QuanLyThueSach.BLL
                             Message = "Không có dữ liệu bạn cần tìm!",
                             Data = list
                         };
-                    }    
+                    }
                     return new Respon<List<TaiKhoanModel>>
                     {
                         StatusCode = 200,
                         Message = "Lấy dữ liệu thành công",
                         Data = list
                     };
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -183,6 +185,29 @@ namespace QuanLyThueSach.BLL
                     {
                         StatusCode = 200,
                         Message = "Xoá tài khoản thành công thành công",
+                        Data = list
+                    };
+                }
+                catch (Exception ex)
+                {
+                    return new Respon<int>
+                    {
+                        StatusCode = 500,
+                        Message = $"Lỗi: {ex.Message}",
+                        Data = 0
+                    };
+                }
+            }
+
+            public async Task<Respon<int>> CreateAsync(CreateTaiKhoan model)
+            {
+                try
+                {
+                    var list = await _repository.CreateAsync(model);
+                    return new Respon<int>
+                    {
+                        StatusCode = 200,
+                        Message = "Tạo tài khoản thành công thành công",
                         Data = list
                     };
                 }

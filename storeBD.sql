@@ -210,6 +210,33 @@ END
 GO
 
 -- Đăng ký 
+CREATE OR ALTER PROCEDURE sp_TaoTaiKhoan
+    @TenTaiKhoan NVARCHAR(20),
+    @MatKhau NVARCHAR(255),
+    @VaiTro NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM TaiKhoan WHERE TenTaiKhoan = @TenTaiKhoan)
+    BEGIN
+        RAISERROR(N'Tên tài khoản đã tồn tại',16,1)
+        RETURN
+    END
+
+    INSERT INTO TaiKhoan
+    (
+        TenTaiKhoan,
+        MatKhau,
+        VaiTro
+    )
+    VALUES
+    (
+        @TenTaiKhoan,
+        @MatKhau,
+        @VaiTro
+    )
+END
 CREATE OR ALTER PROCEDURE sp_DangKy
     @TenTaiKhoan NVARCHAR(20),
     @MatKhau NVARCHAR(255),
@@ -1185,15 +1212,14 @@ BEGIN
     DECLARE @MaPhieuMuon NVARCHAR(20);
 
     BEGIN TRY
+        SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
         BEGIN TRAN;
 
-        -- tạo mã phiếu
         SELECT @MaPhieuMuon =
             'PM' + RIGHT('000' +
             CAST(ISNULL(MAX(CAST(SUBSTRING(MaPhieuMuon,3,10) AS INT)),0) + 1 AS NVARCHAR),3)
         FROM PhieuMuon WITH (UPDLOCK, HOLDLOCK);
 
-        -- kiểm tra bản sao còn trong kho
         IF NOT EXISTS (
             SELECT 1 FROM BanSao
             WHERE MaBanSao = @MaBanSao
@@ -1205,17 +1231,7 @@ BEGIN
             RETURN;
         END
 
-        -- thêm phiếu
         INSERT INTO PhieuMuon
-        (
-            MaPhieuMuon,
-            MaBanDoc,
-            MaBanSao,
-            NgayMuon,
-            HanTra,
-            SoLanGiaHan,
-            TrangThai
-        )
         VALUES
         (
             @MaPhieuMuon,
@@ -1227,7 +1243,6 @@ BEGIN
             N'Đã nhận sách'
         );
 
-        -- cập nhật bản sao
         UPDATE BanSao
         SET TrangThai = N'Đang mượn'
         WHERE MaBanSao = @MaBanSao;
@@ -1748,10 +1763,11 @@ BEGIN
         AND TrangThai = N'Chưa thanh toán'
 END
 GO
-EXEC sp_ThanhToanPhat 'PM006', N'Tiền mặt'
-EXEC sp_PreviewThanhToan @MaPhieuMuon = 'PM009'
-SELECT * fROM Phat
-ALTER PROCEDURE sp_ThanhToanPhat
+EXEC sp_ThanhToanPhat 
+    @MaPhieuMuon = 'PM001',
+    @HinhThucThanhToan = N'Tiền mặt'
+SELECT * FROM ThanhToan
+CREATE OR ALTER PROCEDURE sp_ThanhToanPhat
     @MaPhieuMuon NVARCHAR(20),
     @HinhThucThanhToan NVARCHAR(15),
     @GhiChu NVARCHAR(MAX) = NULL
@@ -1771,7 +1787,8 @@ BEGIN
             @TongTien DECIMAL = 0,
             @GiaMotNgay DECIMAL = 5000,
             @MaThanhToan NVARCHAR(20),
-            @SoNgayMuon INT
+            @SoNgayMuon INT,
+            @MaBanSao NVARCHAR(20)
 
         -- ❌ kiểm tra tồn tại
         IF NOT EXISTS (SELECT 1 FROM PhieuMuon WHERE MaPhieuMuon = @MaPhieuMuon)
@@ -1785,7 +1802,8 @@ BEGIN
         SELECT 
             @MaBanDoc = MaBanDoc,
             @NgayMuon = NgayMuon,
-            @HanTra = HanTra
+            @HanTra = HanTra,
+            @MaBanSao = MaBanSao
         FROM PhieuMuon
         WHERE MaPhieuMuon = @MaPhieuMuon
 
@@ -1796,7 +1814,7 @@ BEGIN
             RETURN
         END
 
-        -- 🔥 tính ngày mượn
+        -- 🔥 tính tiền thuê
         SET @SoNgayMuon = DATEDIFF(DAY, @NgayMuon, GETDATE())
         IF (@SoNgayMuon <= 0) SET @SoNgayMuon = 1
 
@@ -1817,10 +1835,30 @@ BEGIN
             RETURN
         END
 
-        -- ✅ dùng NEWID chống trùng
+        -- ✅ tạo mã thanh toán
         SET @MaThanhToan = 'TT' + REPLACE(LEFT(NEWID(), 8), '-', '')
 
-        -- 🔥 insert
+        -- ================= 🔥 XỬ LÝ MẤT SÁCH =================
+        IF EXISTS (
+            SELECT 1 
+            FROM Phat 
+            WHERE MaPhieuMuon = @MaPhieuMuon
+            AND LyDoPhat LIKE N'%mất%'
+        )
+        BEGIN
+            -- ❗ xoá bản sao → trigger tự giảm số lượng
+            DELETE FROM BanSao
+            WHERE MaBanSao = @MaBanSao
+        END
+        ELSE
+        BEGIN
+            -- ❗ trả sách bình thường
+            UPDATE BanSao
+            SET TrangThai = N'Trong kho'
+            WHERE MaBanSao = @MaBanSao
+        END
+
+        -- ================= 🔥 INSERT THANH TOÁN =================
         INSERT INTO ThanhToan
         (
             MaThanhToan,
@@ -1851,6 +1889,11 @@ BEGIN
         SET DuNo = ISNULL(DuNo,0) - @TienPhat
         WHERE MaBanDoc = @MaBanDoc
 
+        -- 🔥 cập nhật phiếu mượn
+        UPDATE PhieuMuon
+        SET TrangThai = N'Đã trả'
+        WHERE MaPhieuMuon = @MaPhieuMuon
+
         COMMIT
 
         -- 🔥 trả kết quả
@@ -1864,13 +1907,11 @@ BEGIN
     BEGIN CATCH
         ROLLBACK
         DECLARE @ErrorMessage NVARCHAR(4000)
-    SET @ErrorMessage = ERROR_MESSAGE()
-
-    RAISERROR(@ErrorMessage, 16, 1)
+        SET @ErrorMessage = ERROR_MESSAGE()
+        RAISERROR(@ErrorMessage, 16, 1)
     END CATCH
 END
 GO
-
 CREATE PROCEDURE sp_GetHoaDon
     @MaThanhToan NVARCHAR(20)
 AS

@@ -852,6 +852,22 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
+    "Method": "Create",
+    "RelativePath": "api/TaiKhoan/dangky-thuthu",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "QuanLyThueSach.Models.CreateTaiKhoan",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
     "Method": "DoiMatKhau",
     "RelativePath": "api/TaiKhoan/doi-mat-khau/{TenTaiKhoan}",
     "HttpMethod": "PUT",

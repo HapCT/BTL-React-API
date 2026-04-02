@@ -41,6 +41,20 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpPost("dangky-thuthu")]
+        public async Task<IActionResult> Create([FromBody] CreateTaiKhoan model)
+        {
+            try
+            {
+                var response = await _TaiKhoanService.CreateAsync(model);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> DangKy(DangKyModel dangky)
         {

@@ -28,6 +28,12 @@ namespace QuanLyThueSach.Models
         public string TenTaiKhoan { get; set; } = default!;
         public string MatKhau { get; set; } = default!;
     }
+    public class CreateTaiKhoan
+    {
+        public string TenTaiKhoan { get; set; } 
+        public string MatKhau { get; set; } 
+        public string VaiTro { get; set; } 
+    }
     public class DoiMatKhauModel
     {
         public string TenTaiKhoan { get; set; } = default!;

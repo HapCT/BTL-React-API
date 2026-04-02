@@ -20,6 +20,7 @@ namespace QuanLyThueSach.DAL
             Task<List<TaiKhoanModel>> SearchAsync(string tuKhoa);
             Task<int> DoiMatKhauAsync(string tenTaiKhoan, string matKhauCu, string matKhauMoi);
             Task<int> XoaTaiKhoanAsync(string tenTaiKhoan);
+            Task<int> CreateAsync(CreateTaiKhoan model);
         }
         public class TaiKhoanReponsitory : ITaiKhoanRepository
         {
@@ -109,7 +110,19 @@ namespace QuanLyThueSach.DAL
                 }
                 return null!;
             }
+            public async Task<int> CreateAsync(CreateTaiKhoan model)
+            {
+                using var connect = new SqlConnection(_con);
+                await connect.OpenAsync();
 
+                using var cmd = new SqlCommand("sp_TaoTaiKhoan", connect);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@TenTaiKhoan", model.TenTaiKhoan);
+                cmd.Parameters.AddWithValue("@MatKhau", model.MatKhau);
+                cmd.Parameters.AddWithValue("@VaiTro", model.VaiTro);
+                return await cmd.ExecuteNonQueryAsync();
+            }
             public async Task<int> DoiMatKhauAsync(string tenTaiKhoan, string matKhauCu, string matKhauMoi)
             {
                 using var connect = new SqlConnection(_con);
