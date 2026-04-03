@@ -1661,7 +1661,7 @@ BEGIN
     IF (@NgayTra > @HanTra)
         SET @SoNgayTre = DATEDIFF(DAY, @HanTra, @NgayTra)
 
-    SET @SoTien = @SoNgayTre * 5000
+    SET @SoTien = @SoNgayTre * 3.000
 
     -- Thêm lý do
     IF (@LyDoPhat LIKE N'%hỏng%')
@@ -1828,7 +1828,7 @@ BEGIN
             @TienThue DECIMAL = 0,
             @TienPhat DECIMAL = 0,
             @TongTien DECIMAL = 0,
-            @GiaMotNgay DECIMAL = 5000,
+            @GiaMotNgay DECIMAL = 1.500,
             @MaThanhToan NVARCHAR(20),
             @SoNgayMuon INT,
             @MaBanSao NVARCHAR(20)
@@ -2032,7 +2032,7 @@ WHERE MaPhat = 'P0001'
 SELECT * FROM ThanhToan
 
 --Tính tiền 
-CREATE PROCEDURE sp_TinhTien
+ALTER PROCEDURE sp_TinhTien
     @MaPhieuMuon NVARCHAR(20)
 AS
 BEGIN
@@ -2045,7 +2045,7 @@ BEGIN
         @TienThue DECIMAL = 0,
         @TienPhat DECIMAL = 0,
         @TongTien DECIMAL = 0,
-        @GiaMotNgay DECIMAL = 5000 -- 🔥 chỉnh tùy bạn
+        @GiaMotNgay DECIMAL = 1.500 -- 🔥 chỉnh tùy bạn
 
     -- lấy dữ liệu
     SELECT 
