@@ -1526,6 +1526,28 @@
         }
       }
     },
+    "/api/ThanhToan/xuat/{id}": {
+      "get": {
+        "tags": [
+          "ThanhToan"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/TheLoai": {
       "get": {
         "tags": [
@@ -2476,6 +2498,10 @@
           "maBanSao": {
             "type": "string",
             "nullable": true
+          },
+          "ngayTao": {
+            "type": "string",
+            "format": "date"
           },
           "ngayMuon": {
             "type": "string",

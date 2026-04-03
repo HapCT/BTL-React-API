@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Ocelot.Values;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using Document = iText.Layout.Document;
 using QuanLyThueSach.Models;
 using System.Data;
-using static QuanLyThueSach.BLL.ThanhToanBLL;
 using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+using System.Reflection.Metadata;
+using static QuanLyThueSach.BLL.ThanhToanBLL;
 namespace QuanLyThueSach.Controllers
 {
     [Route("api/[controller]")]
@@ -101,6 +106,38 @@ namespace QuanLyThueSach.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("xuat/{id}")]
+        public async Task<IActionResult> XuatHoaDon(string id)
+        {
+            var res = await _thanhToanService.XuatHoaDonAsync(id);
+
+            // ❗ kiểm tra đúng
+            if (res == null || res.Data == null)
+                return NotFound("Không tìm thấy hóa đơn");
+
+            var data = res.Data;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                PdfWriter writer = new PdfWriter(ms);
+                PdfDocument pdf = new PdfDocument(writer);
+                iText.Layout.Document document = new iText.Layout.Document(pdf);
+
+                document.Add(new Paragraph("HÓA ĐƠN")
+                    .SetFontSize(18));
+
+                document.Add(new Paragraph($"Mã: {data.MaThanhToan}"));
+                document.Add(new Paragraph($"Khách: {data.HoTen}"));
+                document.Add(new Paragraph($"SĐT: {data.SoDienThoai}"));
+                document.Add(new Paragraph($"Ngày: {data.Ngay:dd/MM/yyyy}"));
+                document.Add(new Paragraph($"Tổng tiền: {data.SoTien:N0} VND"));
+                document.Add(new Paragraph($"Hình thức: {data.HinhThucThanhToan}"));
+
+                document.Close();
+
+                return File(ms.ToArray(), "application/pdf", $"HoaDon_{id}.pdf");
             }
         }
     }

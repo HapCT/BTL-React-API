@@ -13,6 +13,7 @@ namespace QuanLyThueSach.DAL
             Task<ThanhToanViewModel?> GetHoaDonAsync(string maThanhToan);
             Task<object> ThanhToanAsync(ThanhToanRequest request);
             Task<int> HuyThanhToanAsync(string maThanhToan);
+            Task<HoaDon> XuatHoaDonAsync(string maThanhToan);
         }
 
         public class ThanhToanRepository : IThanhToanRepository
@@ -128,7 +129,48 @@ namespace QuanLyThueSach.DAL
 
                 return null;
             }
+            //Xuất hoá đơn
+            public async Task<HoaDon?> XuatHoaDonAsync(string maThanhToan)
+            {
+                HoaDon? model = null;
+
+                using var connect = new SqlConnection(_con);
+                await connect.OpenAsync();
+
+                string query = @"
+                    SELECT tt.MaThanhToan,
+                    bd.HoTen,
+                    bd.SoDienThoai,
+                    tt.NgayThanhToan,
+                    tt.SoTien,
+                    tt.HinhThucThanhToan,
+                    tt.GhiChu
+                    FROM ThanhToan tt
+                    JOIN BanDoc bd ON tt.MaBanDoc = bd.MaBanDoc
+                    WHERE tt.MaThanhToan = @MaThanhToan
+                ";
+
+                using var cmd = new SqlCommand(query, connect);
+                cmd.Parameters.AddWithValue("@MaThanhToan", maThanhToan);
+
+                using var rd = await cmd.ExecuteReaderAsync();
+
+                if (await rd.ReadAsync())
+                {
+                    model = new HoaDon
+                    {
+                        MaThanhToan = rd["MaThanhToan"]?.ToString(),
+                        HoTen = rd["HoTen"]?.ToString(),
+                        SoDienThoai = rd["SoDienThoai"]?.ToString(),
+                        Ngay = rd["NgayThanhToan"] != DBNull.Value ? Convert.ToDateTime(rd["NgayThanhToan"]) : DateTime.MinValue,
+                        SoTien = rd["SoTien"] != DBNull.Value ? Convert.ToDecimal(rd["SoTien"]) : 0,
+                        HinhThucThanhToan = rd["HinhThucThanhToan"]?.ToString(),
+                        GhiChu = rd["GhiChu"]?.ToString()
+                    };
+                }
+
+                return model;
+            }
         }
     }
 }
-                

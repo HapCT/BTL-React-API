@@ -49,6 +49,7 @@ namespace QuanLyThueSach.Models
     {
         public string MaBanDoc { get; set; }
         public string MaBanSao { get; set; }
+        public DateOnly NgayTao { get; set; }
         public DateTime NgayMuon { get; set; } 
         public DateTime HanTra { get; set; }
     }
@@ -57,7 +58,7 @@ namespace QuanLyThueSach.Models
         public string MaPhieuMuon { get; set; }
         public string TenBanDoc { get; set; }
         public string TenSach { get; set; }
-
+        public DateOnly NgayTao { get; set; }
         public DateTime? NgayMuon { get; set; }
         public DateTime HanTra { get; set; }
 

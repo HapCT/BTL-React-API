@@ -49,4 +49,17 @@ namespace QuanLyThueSach.Models
         public string HinhThucThanhToan { get; set; }
         public string GhiChu { get; set; }
     }
+
+    public class HoaDon
+    {
+        public string MaThanhToan { get; set; }
+        public string MaBanDoc { get; set; }
+        public string HoTen { get; set; }
+        public string SoDienThoai { get; set; }
+        public DateTime Ngay { get; set; }
+        public decimal SoTien { get; set; }
+        public string HinhThucThanhToan { get; set; }
+        public string TrangThai { get; set; }
+        public string GhiChu { get; set; }
+    }
 }

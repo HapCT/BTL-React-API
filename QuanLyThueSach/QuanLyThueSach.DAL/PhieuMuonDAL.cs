@@ -110,9 +110,10 @@ namespace QuanLyThueSach.DAL
                         MaPhieuMuon = rd.GetString(0),
                         TenBanDoc = rd.GetString(1),
                         TenSach = rd.GetString(2),
-                        NgayMuon = rd.IsDBNull(3) ? null : rd.GetDateTime(3),
-                        HanTra = rd.GetDateTime(4),
-                        TrangThai = rd.GetString(5)
+                        NgayTao = DateOnly.FromDateTime(rd.GetDateTime(3)),
+                        NgayMuon = rd.IsDBNull(4) ? null : rd.GetDateTime(4),
+                        HanTra = rd.GetDateTime(5),
+                        TrangThai = rd.GetString(6)
                     });
                 }
 
@@ -142,6 +143,7 @@ namespace QuanLyThueSach.DAL
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@MaBanDoc", request.MaBanDoc);
                 cmd.Parameters.AddWithValue("@MaBanSao", request.MaBanSao);
+                cmd.Parameters.AddWithValue("@NgayTao", request.NgayTao);
                 cmd.Parameters.AddWithValue("@NgayMuon", request.NgayMuon);
                 cmd.Parameters.AddWithValue("@HanTra", request.HanTra);
                 return await cmd.ExecuteNonQueryAsync();

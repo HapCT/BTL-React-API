@@ -1115,7 +1115,8 @@ BEGIN
             NULL,               -- Ngày mượn
             @HanTra,
             0,
-            N'Đăng ký mượn'     -- trạng thái chờ duyệt
+            N'Đăng ký mượn' ,    -- trạng thái chờ duyệt
+			GETDATE()
         )
 
         COMMIT TRAN
@@ -1126,7 +1127,26 @@ BEGIN
         RAISERROR(N'Sách không khả dụng',16,1)
     END
 END
+ALTER PROCEDURE sp_TuDongHuyPhieuMuon
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    -- cập nhật trạng thái
+    UPDATE PhieuMuon
+    SET TrangThai = N'Huỷ'
+    WHERE 
+        TrangThai = N'Đăng ký mượn'
+        AND NgayMuon IS NULL
+        AND DATEDIFF(DAY, NgayTao, GETDATE()) >= 2
+
+    -- trả sách về kho
+    UPDATE bs
+    SET TrangThai = N'Trong kho'
+    FROM BanSao bs
+    JOIN PhieuMuon pm ON bs.MaBanSao = pm.MaBanSao
+    WHERE pm.TrangThai = N'Huỷ'
+END
 
 -- Xem phiếu mượn theo id 
 CREATE PROCEDURE sp_XemPhieuMuon
@@ -1138,9 +1158,10 @@ BEGIN
     WHERE MaBanDoc = @MaBanDoc
 END
 --Hiển thị 
-CREATE PROCEDURE sp_HienThiPhieuMuon
+ALTER PROCEDURE sp_HienThiPhieuMuon
 AS
 BEGIN
+	EXEC sp_TuDongHuyPhieuMuon
 	SELECT 
 		pm.MaPhieuMuon,
 		bd.HoTen AS TenBanDoc,
@@ -1750,17 +1771,39 @@ BEGIN
     ORDER BY p.NgayTinh DESC
 END
 GO
+
+
 -- Huỷ 
-CREATE PROCEDURE sp_HuyPhat
+ALTER PROCEDURE sp_HuyPhat
     @MaPhat NVARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    DECLARE 
+        @SoTien DECIMAL,
+        @MaBanDoc NVARCHAR(20)
+
+    -- lấy tiền + bạn đọc
+    SELECT 
+        @SoTien = p.SoTien,
+        @MaBanDoc = pm.MaBanDoc
+    FROM Phat p
+    JOIN PhieuMuon pm ON p.MaPhieuMuon = pm.MaPhieuMuon
+    WHERE p.MaPhat = @MaPhat
+    AND p.TrangThai = N'Chưa thanh toán'
+
+    IF @SoTien IS NULL RETURN
+
+    -- huỷ phạt
     UPDATE Phat
     SET TrangThai = N'Đã huỷ'
-    WHERE 
-        MaPhat = @MaPhat
-        AND TrangThai = N'Chưa thanh toán'
+    WHERE MaPhat = @MaPhat
+
+    -- 🔥 TRỪ LẠI DƯ NỢ
+    UPDATE BanDoc
+    SET DuNo = ISNULL(DuNo,0) - @SoTien
+    WHERE MaBanDoc = @MaBanDoc
 END
 GO
 EXEC sp_ThanhToanPhat 

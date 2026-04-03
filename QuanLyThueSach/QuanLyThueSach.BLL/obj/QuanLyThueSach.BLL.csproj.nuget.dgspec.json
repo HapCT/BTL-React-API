@@ -73,6 +73,14 @@
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
               "version": "[10.0.5, )"
+            },
+            "itext.bouncy-castle-adapter": {
+              "target": "Package",
+              "version": "[9.6.0, )"
+            },
+            "itext7": {
+              "target": "Package",
+              "version": "[9.6.0, )"
             }
           },
           "imports": [
@@ -461,6 +469,14 @@
             "System.Data.SqlClient": {
               "target": "Package",
               "version": "[4.9.1, )"
+            },
+            "itext.bouncy-castle-adapter": {
+              "target": "Package",
+              "version": "[9.6.0, )"
+            },
+            "itext7": {
+              "target": "Package",
+              "version": "[9.6.0, )"
             }
           },
           "imports": [
@@ -841,6 +857,14 @@
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
               "version": "[10.0.5, )"
+            },
+            "itext.bouncy-castle-adapter": {
+              "target": "Package",
+              "version": "[9.6.0, )"
+            },
+            "itext7": {
+              "target": "Package",
+              "version": "[9.6.0, )"
             }
           },
           "imports": [
