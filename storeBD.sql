@@ -553,126 +553,92 @@ BEGIN
 		TenTheLoai LIKE '%' + @TuKhoa + '%'
 		OR MoTa LIKE '%' + @TuKhoa + '%'
 END
-
+EXEC sp_HienThiSach
 --Sách 
-CREATE PROCEDURE sp_HienThiSach
+CREATE OR ALTER PROCEDURE sp_HienThiSach
 AS
 BEGIN
-	SELECT 
-	s.MaTheLoai,
-	tl.TenTheLoai,
-	s.MaSach,
-	s.TieuDe,
-	s.TacGia,
-	s.NamXB,
-	s.NgonNgu,
-	s.SoLuongSach,
-	s.HinhAnh
-	FROM Sach s 
-	LEFT JOIN TheLoai tl ON s.MaTheLoai = tl.MaTheLoai
+    SELECT 
+    s.MaSach,
+    s.TieuDe,
+    s.TacGia,
+    s.NamXB,
+    s.NgonNgu,
+    s.SoLuongSach,
+    s.HinhAnh,
+    ISNULL(
+        STRING_AGG(tl.TenTheLoai, ', '),
+        N'Không có'
+    ) AS TheLoai
+FROM Sach s
+LEFT JOIN SachTheLoai st ON s.MaSach = st.MaSach
+LEFT JOIN TheLoai tl ON st.MaTheLoai = tl.MaTheLoai
+GROUP BY 
+    s.MaSach, s.TieuDe, s.TacGia,
+    s.NamXB, s.NgonNgu, s.SoLuongSach, s.HinhAnh
 END
 
 --Thêm sách
 CREATE OR ALTER PROCEDURE sp_ThemSach
-	@MaTheLoai NVARCHAR(20),
-	@TieuDe NVARCHAR(50),
-	@TacGia NVARCHAR(20),
-	@NamXB NVARCHAR(10),
-	@NgonNgu NVARCHAR(20),
-	@SoLuongSach INT,
-	@HinhAnh NVARCHAR(255)
-AS
-BEGIN
-
-	-- kiểm tra trùng sách
-	IF EXISTS (
-		SELECT 1 
-		FROM Sach 
-		WHERE TieuDe = @TieuDe 
-		AND TacGia = @TacGia
-	)
-	BEGIN
-		RAISERROR(N'Sách đã tồn tại',16,1)
-		RETURN
-	END
-
-	DECLARE @MaSach NVARCHAR(20)
-
-	-- tạo mã sách
-	SELECT @MaSach =
-	'S' + RIGHT('000' +
-	CAST(ISNULL(MAX(CAST(SUBSTRING(MaSach,2,10) AS INT)),0) + 1 AS NVARCHAR),3)
-	FROM Sach
-	IF @SoLuongSach < 0
-	BEGIN
-		RAISERROR(N'Số lượng sách không hợp lệ',16,1)
-		RETURN
-	END
-	INSERT INTO Sach
-	(
-		MaSach,
-		TieuDe,
-		TacGia,
-		MaTheLoai,
-		NamXB,
-		NgonNgu,
-		SoLuongSach,
-		HinhAnh
-	)
-	VALUES
-	(
-		@MaSach,
-		@TieuDe,
-		@TacGia,
-		@MaTheLoai,
-		@NamXB,
-		@NgonNgu,
-		@SoLuongSach,
-		@HinhAnh
-	)
-
-END
-GO
-SELECT * FROM TheLoai
--- Sửa sách
-CREATE PROCEDURE sp_SuaSach
-    @MaSach NVARCHAR(20),
-    @MaTheLoai NVARCHAR(20),
     @TieuDe NVARCHAR(50),
     @TacGia NVARCHAR(20),
     @NamXB NVARCHAR(10),
     @NgonNgu NVARCHAR(20),
     @SoLuongSach INT,
-    @HinhAnh NVARCHAR(255) = NULL,
-    @HinhAnhCu NVARCHAR(255) = NULL
+    @HinhAnh NVARCHAR(255),
+    @DanhSachTheLoai NVARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @MaSach NVARCHAR(20)
+
+    SELECT @MaSach =
+    'S' + RIGHT('000' +
+    CAST(ISNULL(MAX(CAST(SUBSTRING(MaSach,2,10) AS INT)),0) + 1 AS NVARCHAR),3)
+    FROM Sach
+
+    INSERT INTO Sach VALUES
+    (@MaSach, @TieuDe, @TacGia, @NamXB, @NgonNgu, @SoLuongSach, @HinhAnh)
+
+    -- 🔥 insert nhiều thể loại
+    INSERT INTO SachTheLoai(MaSach, MaTheLoai)
+    SELECT @MaSach, value
+    FROM STRING_SPLIT(@DanhSachTheLoai, ',')
+END
+SELECT * FROM TheLoai
+-- Sửa sách
+CREATE OR ALTER PROCEDURE sp_SuaSach
+    @MaSach NVARCHAR(20),
+    @TieuDe NVARCHAR(50),
+    @TacGia NVARCHAR(20),
+    @NamXB NVARCHAR(10),
+    @NgonNgu NVARCHAR(20),
+    @SoLuongSach INT,
+    @HinhAnh NVARCHAR(255),
+    @DanhSachTheLoai NVARCHAR(MAX)
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    IF EXISTS (
-        SELECT 1
-        FROM Sach
-        WHERE TieuDe = @TieuDe
-        AND TacGia = @TacGia
-        AND MaSach <> @MaSach
-    )
-    BEGIN
-        RAISERROR(N'Sách đã tồn tại',16,1)
-        RETURN
-    END
-
+    -- 1. update thông tin sách
     UPDATE Sach
     SET
         TieuDe = @TieuDe,
         TacGia = @TacGia,
-        MaTheLoai = @MaTheLoai,
         NamXB = @NamXB,
         NgonNgu = @NgonNgu,
         SoLuongSach = @SoLuongSach,
-        HinhAnh = ISNULL(@HinhAnh, @HinhAnhCu)
+        HinhAnh = @HinhAnh
     WHERE MaSach = @MaSach
+
+    -- 2. xoá thể loại cũ
+    DELETE FROM SachTheLoai
+    WHERE MaSach = @MaSach
+
+    -- 3. thêm thể loại mới
+    INSERT INTO SachTheLoai(MaSach, MaTheLoai)
+    SELECT @MaSach, value
+    FROM STRING_SPLIT(@DanhSachTheLoai, ',')
 END
-GO
 DROP PROCEDURE sp_SuaSach 
 
 -- Xoá sách
@@ -737,11 +703,13 @@ BEGIN
     PRINT N'Xóa sách thành công'
 END
 GO
+EXEC sp_HienThiSach
 -- tìm theo ID
-CREATE PROCEDURE sp_TimSachTheoID
-    @MaSach NVARCHAR(20)
+CREATE OR ALTER PROCEDURE sp_TimSach
+    @TuKhoa NVARCHAR(50)
 AS
 BEGIN
+    SET NOCOUNT ON;
 
     SELECT 
         s.MaSach,
@@ -750,43 +718,53 @@ BEGIN
         s.NamXB,
         s.NgonNgu,
         s.SoLuongSach,
-        s.MaTheLoai,
-        tl.TenTheLoai
+        s.HinhAnh,
+        ISNULL(STRING_AGG(tl.TenTheLoai, ', '), N'Không có') AS TheLoai
     FROM Sach s
-    JOIN TheLoai tl 
-        ON s.MaTheLoai = tl.MaTheLoai
-    WHERE s.MaSach = @MaSach
-
+    LEFT JOIN SachTheLoai st ON s.MaSach = st.MaSach
+    LEFT JOIN TheLoai tl ON st.MaTheLoai = tl.MaTheLoai
+    WHERE 
+        s.TieuDe LIKE '%' + @TuKhoa + '%'
+        OR s.TacGia LIKE '%' + @TuKhoa + '%'
+        OR s.NamXB LIKE '%' + @TuKhoa + '%'
+        OR s.NgonNgu LIKE '%' + @TuKhoa + '%'
+    GROUP BY 
+        s.MaSach, s.TieuDe, s.TacGia, s.NamXB, s.NgonNgu, s.SoLuongSach, s.HinhAnh
 END
-GO
 
 -- Tìm theo từ khoá 
-CREATE PROCEDURE sp_TimSach
-	@TuKhoa NVARCHAR(50)
+CREATE OR ALTER PROCEDURE sp_TimSach
+    @TuKhoa NVARCHAR(50)
 AS
 BEGIN
-
-	SELECT 
-		s.MaTheLoai,
-		tl.TenTheLoai,
-		s.MaSach,
-		s.TieuDe,
-		s.TacGia,
-		s.NamXB,
-		s.NgonNgu,
-		s.SoLuongSach
-	FROM Sach s
-	LEFT JOIN TheLoai tl 
-		ON s.MaTheLoai = tl.MaTheLoai
-	WHERE 
-		s.TieuDe LIKE '%' + @TuKhoa + '%'
-		OR s.TacGia LIKE '%' + @TuKhoa + '%'
-		OR s.NamXB LIKE '%' + @TuKhoa + '%'
-		OR s.NgonNgu LIKE '%' + @TuKhoa + '%'
-		OR tl.TenTheLoai LIKE '%' + @TuKhoa + '%'
-
+    SELECT 
+        s.MaSach,
+        s.TieuDe,
+        s.TacGia,
+        s.NamXB,
+        s.NgonNgu,
+        s.SoLuongSach,
+        s.HinhAnh,
+        STRING_AGG(tl.TenTheLoai, ', ') AS TheLoai
+    FROM Sach s
+    LEFT JOIN SachTheLoai st ON s.MaSach = st.MaSach
+    LEFT JOIN TheLoai tl ON st.MaTheLoai = tl.MaTheLoai
+    WHERE 
+        s.TieuDe LIKE '%' + @TuKhoa + '%'
+        OR s.TacGia LIKE '%' + @TuKhoa + '%'
+        OR s.NamXB LIKE '%' + @TuKhoa + '%'
+        OR s.NgonNgu LIKE '%' + @TuKhoa + '%'
+        OR EXISTS (
+            SELECT 1 
+            FROM SachTheLoai st2
+            JOIN TheLoai tl2 ON st2.MaTheLoai = tl2.MaTheLoai
+            WHERE st2.MaSach = s.MaSach
+            AND tl2.TenTheLoai LIKE '%' + @TuKhoa + '%'
+        )
+    GROUP BY 
+        s.MaSach, s.TieuDe, s.TacGia, 
+        s.NamXB, s.NgonNgu, s.SoLuongSach, s.HinhAnh
 END
-GO
 -- Giảm số lượng sách khi mượn
 CREATE PROCEDURE sp_GiamSoLuongSach
 	@MaSach NVARCHAR(20),

@@ -27,7 +27,8 @@ namespace QuanLyThueSach.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -42,7 +43,8 @@ namespace QuanLyThueSach.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -68,20 +70,23 @@ namespace QuanLyThueSach.Controllers
 
                 var response = await _SachService.ThemSachAsync(new ThemSach
                 {
-                    MaTheLoai = model.MaTheLoai,
                     TieuDe = model.TieuDe,
                     TacGia = model.TacGia,
                     NamXB = model.NamXB,
                     NgonNgu = model.NgonNgu,
                     SoLuongSach = model.SoLuongSach,
-                    HinhAnh = url
+                    HinhAnh = url,
+
+                    // 🔥 FIX
+                    TheLoai = model.TheLoai
                 });
 
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -107,20 +112,23 @@ namespace QuanLyThueSach.Controllers
 
                 var response = await _SachService.SuaSachAsync(masach, new SuaSach
                 {
-                    MaTheLoai = model.MaTheLoai,
                     TieuDe = model.TieuDe,
                     TacGia = model.TacGia,
                     NamXB = model.NamXB,
                     NgonNgu = model.NgonNgu,
                     SoLuongSach = model.SoLuongSach,
-                    HinhAnh = url
+                    HinhAnh = url,
+
+                    // 🔥 FIX
+                    DanhSachTheLoai = model.TheLoai
                 });
 
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -135,7 +143,8 @@ namespace QuanLyThueSach.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, ex.ToString());
             }
         }
         [HttpGet("search/{tukhoa}")]
@@ -148,8 +157,15 @@ namespace QuanLyThueSach.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, ex.ToString()); ;
             }
+        }
+        [HttpGet("pho-bien")]
+        public async Task<IActionResult> GetSachPhoBien()
+        {
+            var res = await _SachService.GetSachPhoBienAsync();
+            return StatusCode(res.StatusCode, res);
         }
     }
 }

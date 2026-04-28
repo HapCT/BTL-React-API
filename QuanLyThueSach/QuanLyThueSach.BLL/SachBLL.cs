@@ -13,6 +13,7 @@ namespace QuanLyThueSach.BLL
             Task<Respon<int>> XoaSachAsync(string maSach);
             Task<Respon<List<SachModel>>> TimSachIDAsync(string maSach);
             Task<Respon<List<SachModel>>> TimSachAsync(string tuKhoa);
+            Task<Respon<List<SachPhoBienModel>>> GetSachPhoBienAsync();
         }
 
         public class SachService : ISachServices
@@ -206,6 +207,17 @@ namespace QuanLyThueSach.BLL
                         Data = null
                     };
                 }
+            }
+            public async Task<Respon<List<SachPhoBienModel>>> GetSachPhoBienAsync()
+            {
+                var data = await _repository.GetSachPhoBienAsync();
+
+                return new Respon<List<SachPhoBienModel>>
+                {
+                    StatusCode = 200,
+                    Message = "Lấy sách phổ biến thành công",
+                    Data = data
+                };
             }
         }
     }

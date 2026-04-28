@@ -1007,9 +1007,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "MaTheLoai": {
-                    "type": "string"
-                  },
                   "TieuDe": {
                     "type": "string"
                   },
@@ -1029,13 +1026,16 @@
                   "HinhAnh": {
                     "type": "string",
                     "format": "binary"
+                  },
+                  "TheLoai": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 }
               },
               "encoding": {
-                "MaTheLoai": {
-                  "style": "form"
-                },
                 "TieuDe": {
                   "style": "form"
                 },
@@ -1052,6 +1052,9 @@
                   "style": "form"
                 },
                 "HinhAnh": {
+                  "style": "form"
+                },
+                "TheLoai": {
                   "style": "form"
                 }
               }
@@ -1106,7 +1109,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "MaTheLoai": {
+                  "MaSach": {
                     "type": "string"
                   },
                   "TieuDe": {
@@ -1131,11 +1134,17 @@
                   },
                   "HinhAnhCu": {
                     "type": "string"
+                  },
+                  "TheLoai": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 }
               },
               "encoding": {
-                "MaTheLoai": {
+                "MaSach": {
                   "style": "form"
                 },
                 "TieuDe": {
@@ -1157,6 +1166,9 @@
                   "style": "form"
                 },
                 "HinhAnhCu": {
+                  "style": "form"
+                },
+                "TheLoai": {
                   "style": "form"
                 }
               }
@@ -1204,6 +1216,18 @@
               "type": "string"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Sach/pho-bien": {
+      "get": {
+        "tags": [
+          "Sach"
         ],
         "responses": {
           "200": {

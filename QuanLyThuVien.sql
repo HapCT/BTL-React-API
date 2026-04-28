@@ -2,7 +2,7 @@
 GO
 USE QuanLyThuVien_React
 GO 
-
+SELECT * FROM TaiKhoan
 CREATE TABLE BanDoc
 (
 	MaBanDoc NVARCHAR(20) PRIMARY KEY,
@@ -169,6 +169,16 @@ DELETE FROM BanDoc;
 
 -- Bật lại ràng buộc
 EXEC sp_MSforeachtable 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL';
+ALTER TABLE Sach
+DROP CONSTRAINT FK__Sach__MaTheLoai__05D8E0BE;
+ALTER TABLE Sach DROP COLUMN MaTheLoai
+CREATE TABLE SachTheLoai
+(
+    MaSach NVARCHAR(20),
+    MaTheLoai NVARCHAR(20),
 
+    PRIMARY KEY (MaSach, MaTheLoai),
 
-SELECT * FROM ThanhToan
+    FOREIGN KEY (MaSach) REFERENCES Sach(MaSach),
+    FOREIGN KEY (MaTheLoai) REFERENCES TheLoai(MaTheLoai)
+)

@@ -625,11 +625,6 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "MaTheLoai",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
         "Name": "TieuDe",
         "Type": "System.String",
         "IsRequired": false
@@ -657,6 +652,11 @@
       {
         "Name": "HinhAnh",
         "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "TheLoai",
+        "Type": "System.Collections.Generic.List\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
     ],
@@ -692,7 +692,7 @@
         "IsRequired": true
       },
       {
-        "Name": "MaTheLoai",
+        "Name": "MaSach",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -730,6 +730,11 @@
         "Name": "HinhAnhCu",
         "Type": "System.String",
         "IsRequired": false
+      },
+      {
+        "Name": "TheLoai",
+        "Type": "System.Collections.Generic.List\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -748,6 +753,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.SachController",
+    "Method": "GetSachPhoBien",
+    "RelativePath": "api/Sach/pho-bien",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
