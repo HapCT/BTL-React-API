@@ -1027,7 +1027,7 @@
                     "type": "string",
                     "format": "binary"
                   },
-                  "TheLoai": {
+                  "DanhSachTheLoai": {
                     "type": "array",
                     "items": {
                       "type": "string"
@@ -1054,7 +1054,7 @@
                 "HinhAnh": {
                   "style": "form"
                 },
-                "TheLoai": {
+                "DanhSachTheLoai": {
                   "style": "form"
                 }
               }
@@ -1109,9 +1109,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "MaSach": {
-                    "type": "string"
-                  },
                   "TieuDe": {
                     "type": "string"
                   },
@@ -1135,7 +1132,7 @@
                   "HinhAnhCu": {
                     "type": "string"
                   },
-                  "TheLoai": {
+                  "DanhSachTheLoai": {
                     "type": "array",
                     "items": {
                       "type": "string"
@@ -1144,9 +1141,6 @@
                 }
               },
               "encoding": {
-                "MaSach": {
-                  "style": "form"
-                },
                 "TieuDe": {
                   "style": "form"
                 },
@@ -1168,7 +1162,7 @@
                 "HinhAnhCu": {
                   "style": "form"
                 },
-                "TheLoai": {
+                "DanhSachTheLoai": {
                   "style": "form"
                 }
               }

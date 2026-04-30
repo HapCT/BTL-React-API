@@ -618,7 +618,7 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.SachController",
-    "Method": "ThemSach",
+    "Method": "Them",
     "RelativePath": "api/Sach",
     "HttpMethod": "POST",
     "IsController": true,
@@ -655,7 +655,7 @@
         "IsRequired": false
       },
       {
-        "Name": "TheLoai",
+        "Name": "DanhSachTheLoai",
         "Type": "System.Collections.Generic.List\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
@@ -664,7 +664,7 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.SachController",
-    "Method": "GetSachId",
+    "Method": "GetById",
     "RelativePath": "api/Sach/{masach}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -680,7 +680,7 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.SachController",
-    "Method": "SuaSach",
+    "Method": "Sua",
     "RelativePath": "api/Sach/{masach}",
     "HttpMethod": "PUT",
     "IsController": true,
@@ -690,11 +690,6 @@
         "Name": "masach",
         "Type": "System.String",
         "IsRequired": true
-      },
-      {
-        "Name": "MaSach",
-        "Type": "System.String",
-        "IsRequired": false
       },
       {
         "Name": "TieuDe",
@@ -732,7 +727,7 @@
         "IsRequired": false
       },
       {
-        "Name": "TheLoai",
+        "Name": "DanhSachTheLoai",
         "Type": "System.Collections.Generic.List\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
@@ -741,7 +736,7 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.SachController",
-    "Method": "XoaSach",
+    "Method": "Xoa",
     "RelativePath": "api/Sach/{masach}",
     "HttpMethod": "DELETE",
     "IsController": true,
@@ -757,7 +752,7 @@
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.SachController",
-    "Method": "GetSachPhoBien",
+    "Method": "PhoBien",
     "RelativePath": "api/Sach/pho-bien",
     "HttpMethod": "GET",
     "IsController": true,

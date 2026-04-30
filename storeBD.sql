@@ -555,91 +555,127 @@ BEGIN
 END
 EXEC sp_HienThiSach
 --Sách 
-CREATE OR ALTER PROCEDURE sp_HienThiSach
-AS
-BEGIN
-    SELECT 
-    s.MaSach,
-    s.TieuDe,
-    s.TacGia,
-    s.NamXB,
-    s.NgonNgu,
-    s.SoLuongSach,
-    s.HinhAnh,
-    ISNULL(
-        STRING_AGG(tl.TenTheLoai, ', '),
-        N'Không có'
-    ) AS TheLoai
-FROM Sach s
-LEFT JOIN SachTheLoai st ON s.MaSach = st.MaSach
-LEFT JOIN TheLoai tl ON st.MaTheLoai = tl.MaTheLoai
-GROUP BY 
-    s.MaSach, s.TieuDe, s.TacGia,
-    s.NamXB, s.NgonNgu, s.SoLuongSach, s.HinhAnh
-END
-
---Thêm sách
-CREATE OR ALTER PROCEDURE sp_ThemSach
-    @TieuDe NVARCHAR(50),
-    @TacGia NVARCHAR(20),
-    @NamXB NVARCHAR(10),
-    @NgonNgu NVARCHAR(20),
-    @SoLuongSach INT,
-    @HinhAnh NVARCHAR(255),
-    @DanhSachTheLoai NVARCHAR(MAX)
-AS
-BEGIN
-    DECLARE @MaSach NVARCHAR(20)
-
-    SELECT @MaSach =
-    'S' + RIGHT('000' +
-    CAST(ISNULL(MAX(CAST(SUBSTRING(MaSach,2,10) AS INT)),0) + 1 AS NVARCHAR),3)
-    FROM Sach
-
-    INSERT INTO Sach VALUES
-    (@MaSach, @TieuDe, @TacGia, @NamXB, @NgonNgu, @SoLuongSach, @HinhAnh)
-
-    -- 🔥 insert nhiều thể loại
-    INSERT INTO SachTheLoai(MaSach, MaTheLoai)
-    SELECT @MaSach, value
-    FROM STRING_SPLIT(@DanhSachTheLoai, ',')
-END
-SELECT * FROM TheLoai
--- Sửa sách
-CREATE OR ALTER PROCEDURE sp_SuaSach
-    @MaSach NVARCHAR(20),
-    @TieuDe NVARCHAR(50),
-    @TacGia NVARCHAR(20),
-    @NamXB NVARCHAR(10),
-    @NgonNgu NVARCHAR(20),
-    @SoLuongSach INT,
-    @HinhAnh NVARCHAR(255),
-    @DanhSachTheLoai NVARCHAR(MAX)
+IF OBJECT_ID('sp_HienThiSach', 'P') IS NOT NULL DROP PROC sp_HienThiSach;
+GO
+CREATE PROCEDURE sp_HienThiSach
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- 1. update thông tin sách
-    UPDATE Sach
-    SET
-        TieuDe = @TieuDe,
-        TacGia = @TacGia,
-        NamXB = @NamXB,
-        NgonNgu = @NgonNgu,
-        SoLuongSach = @SoLuongSach,
-        HinhAnh = @HinhAnh
-    WHERE MaSach = @MaSach
-
-    -- 2. xoá thể loại cũ
-    DELETE FROM SachTheLoai
-    WHERE MaSach = @MaSach
-
-    -- 3. thêm thể loại mới
-    INSERT INTO SachTheLoai(MaSach, MaTheLoai)
-    SELECT @MaSach, value
-    FROM STRING_SPLIT(@DanhSachTheLoai, ',')
+ 
+    SELECT
+        s.MaSach,
+        s.TieuDe,
+        s.TacGia,
+        s.NamXB,
+        s.NgonNgu,
+        s.SoLuongSach,
+        s.HinhAnh,
+        -- Ghép tên thể loại thành chuỗi "TL001:Văn học,TL002:Khoa học"
+        STUFF((
+            SELECT ',' + stl2.MaTheLoai + ':' + tl2.TenTheLoai
+            FROM SachTheLoai stl2
+            JOIN TheLoai tl2 ON stl2.MaTheLoai = tl2.MaTheLoai
+            WHERE stl2.MaSach = s.MaSach
+            FOR XML PATH(''), TYPE
+        ).value('.','NVARCHAR(MAX)'), 1, 1, '') AS DanhSachTheLoai
+    FROM Sach s
+    ORDER BY s.MaSach;
 END
-DROP PROCEDURE sp_SuaSach 
+GO
+
+--Thêm sách
+IF OBJECT_ID('sp_ThemSach', 'P') IS NOT NULL DROP PROC sp_ThemSach;
+GO
+CREATE PROCEDURE sp_ThemSach
+    @DanhSachTheLoai    NVARCHAR(MAX),
+    @TieuDe             NVARCHAR(50),
+    @TacGia             NVARCHAR(20),
+    @NamXB              NVARCHAR(10),
+    @NgonNgu            NVARCHAR(20),
+    @SoLuongSach        INT,
+    @HinhAnh            NVARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+ 
+    -- Tạo mã sách mới tự tăng
+    DECLARE @MaSach NVARCHAR(20);
+    DECLARE @MaxNum INT;
+ 
+    SELECT @MaxNum = ISNULL(MAX(CAST(SUBSTRING(MaSach, 2, LEN(MaSach)) AS INT)), 0)
+    FROM Sach
+    WHERE MaSach LIKE 'S%' AND ISNUMERIC(SUBSTRING(MaSach, 2, LEN(MaSach))) = 1;
+ 
+    SET @MaSach = 'S' + RIGHT('000' + CAST(@MaxNum + 1 AS NVARCHAR), 3);
+ 
+    -- Thêm sách
+    INSERT INTO Sach (MaSach, TieuDe, TacGia, NamXB, NgonNgu, SoLuongSach, HinhAnh)
+    VALUES (@MaSach, @TieuDe, @TacGia, @NamXB, @NgonNgu, @SoLuongSach, @HinhAnh);
+ 
+    -- Thêm quan hệ thể loại (tách chuỗi "TL001,TL002")
+    IF @DanhSachTheLoai IS NOT NULL AND LEN(TRIM(@DanhSachTheLoai)) > 0
+    BEGIN
+        ;WITH Split AS (
+            SELECT TRIM(value) AS MaTheLoai
+            FROM STRING_SPLIT(@DanhSachTheLoai, ',')
+            WHERE TRIM(value) <> ''
+        )
+        INSERT INTO SachTheLoai (MaSach, MaTheLoai)
+        SELECT @MaSach, MaTheLoai
+        FROM Split
+        WHERE EXISTS (SELECT 1 FROM TheLoai WHERE MaTheLoai = Split.MaTheLoai);
+    END
+ 
+    COMMIT;
+END
+GO
+-- Sửa sách
+IF OBJECT_ID('sp_SuaSach', 'P') IS NOT NULL DROP PROC sp_SuaSach;
+GO
+CREATE PROCEDURE sp_SuaSach
+    @MaSach             NVARCHAR(20),
+    @TieuDe             NVARCHAR(50),
+    @TacGia             NVARCHAR(20),
+    @NamXB              NVARCHAR(10),
+    @NgonNgu            NVARCHAR(20),
+    @SoLuongSach        INT,
+    @HinhAnh            NVARCHAR(255) = NULL,
+    @DanhSachTheLoai    NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+ 
+    -- Cập nhật thông tin sách
+    UPDATE Sach
+    SET TieuDe       = @TieuDe,
+        TacGia       = @TacGia,
+        NamXB        = @NamXB,
+        NgonNgu      = @NgonNgu,
+        SoLuongSach  = @SoLuongSach,
+        HinhAnh      = CASE WHEN @HinhAnh IS NOT NULL THEN @HinhAnh ELSE HinhAnh END
+    WHERE MaSach = @MaSach;
+ 
+    -- Xóa toàn bộ thể loại cũ
+    DELETE FROM SachTheLoai WHERE MaSach = @MaSach;
+ 
+    -- Thêm thể loại mới
+    IF @DanhSachTheLoai IS NOT NULL AND LEN(TRIM(@DanhSachTheLoai)) > 0
+    BEGIN
+        ;WITH Split AS (
+            SELECT TRIM(value) AS MaTheLoai
+            FROM STRING_SPLIT(@DanhSachTheLoai, ',')
+            WHERE TRIM(value) <> ''
+        )
+        INSERT INTO SachTheLoai (MaSach, MaTheLoai)
+        SELECT @MaSach, MaTheLoai
+        FROM Split
+        WHERE EXISTS (SELECT 1 FROM TheLoai WHERE MaTheLoai = Split.MaTheLoai);
+    END
+ 
+    COMMIT;
+END
 
 -- Xoá sách
 CREATE OR ALTER PROCEDURE sp_XoaSach
@@ -703,15 +739,32 @@ BEGIN
     PRINT N'Xóa sách thành công'
 END
 GO
-EXEC sp_HienThiSach
--- tìm theo ID
-CREATE OR ALTER PROCEDURE sp_TimSach
-    @TuKhoa NVARCHAR(50)
+SELECT 'Tables:' AS Info;
+SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_NAME IN ('Sach','TheLoai','SachTheLoai')
+ORDER BY TABLE_NAME;
+ 
+SELECT 'Columns of Sach:' AS Info;
+SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'Sach' ORDER BY ORDINAL_POSITION;
+ 
+SELECT 'Stored Procedures:' AS Info;
+SELECT name FROM sys.objects 
+WHERE type = 'P' AND name IN ('sp_HienThiSach','sp_ThemSach','sp_SuaSach','sp_XoaSach','sp_TimSach','sp_TimSachTheoID')
+ORDER BY name;
+ 
+PRINT '=== DONE: Database đã cập nhật thành công ===';
+GO
+
+IF OBJECT_ID('sp_TimSach', 'P') IS NOT NULL DROP PROC sp_TimSach;
+GO
+CREATE PROCEDURE sp_TimSach
+    @TuKhoa NVARCHAR(100)
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    SELECT 
+ 
+    SELECT
         s.MaSach,
         s.TieuDe,
         s.TacGia,
@@ -719,25 +772,30 @@ BEGIN
         s.NgonNgu,
         s.SoLuongSach,
         s.HinhAnh,
-        ISNULL(STRING_AGG(tl.TenTheLoai, ', '), N'Không có') AS TheLoai
+        STUFF((
+            SELECT ',' + stl2.MaTheLoai + ':' + tl2.TenTheLoai
+            FROM SachTheLoai stl2
+            JOIN TheLoai tl2 ON stl2.MaTheLoai = tl2.MaTheLoai
+            WHERE stl2.MaSach = s.MaSach
+            FOR XML PATH(''), TYPE
+        ).value('.','NVARCHAR(MAX)'), 1, 1, '') AS DanhSachTheLoai
     FROM Sach s
-    LEFT JOIN SachTheLoai st ON s.MaSach = st.MaSach
-    LEFT JOIN TheLoai tl ON st.MaTheLoai = tl.MaTheLoai
-    WHERE 
-        s.TieuDe LIKE '%' + @TuKhoa + '%'
-        OR s.TacGia LIKE '%' + @TuKhoa + '%'
-        OR s.NamXB LIKE '%' + @TuKhoa + '%'
-        OR s.NgonNgu LIKE '%' + @TuKhoa + '%'
-    GROUP BY 
-        s.MaSach, s.TieuDe, s.TacGia, s.NamXB, s.NgonNgu, s.SoLuongSach, s.HinhAnh
+    WHERE s.TieuDe  LIKE N'%' + @TuKhoa + '%'
+       OR s.TacGia  LIKE N'%' + @TuKhoa + '%'
+    ORDER BY s.MaSach;
 END
+GO
 
 -- Tìm theo từ khoá 
-CREATE OR ALTER PROCEDURE sp_TimSach
-    @TuKhoa NVARCHAR(50)
+IF OBJECT_ID('sp_TimSachTheoID', 'P') IS NOT NULL DROP PROC sp_TimSachTheoID;
+GO
+CREATE PROCEDURE sp_TimSachTheoID
+    @MaSach NVARCHAR(20)
 AS
 BEGIN
-    SELECT 
+    SET NOCOUNT ON;
+ 
+    SELECT
         s.MaSach,
         s.TieuDe,
         s.TacGia,
@@ -745,26 +803,17 @@ BEGIN
         s.NgonNgu,
         s.SoLuongSach,
         s.HinhAnh,
-        STRING_AGG(tl.TenTheLoai, ', ') AS TheLoai
+        STUFF((
+            SELECT ',' + stl2.MaTheLoai + ':' + tl2.TenTheLoai
+            FROM SachTheLoai stl2
+            JOIN TheLoai tl2 ON stl2.MaTheLoai = tl2.MaTheLoai
+            WHERE stl2.MaSach = s.MaSach
+            FOR XML PATH(''), TYPE
+        ).value('.','NVARCHAR(MAX)'), 1, 1, '') AS DanhSachTheLoai
     FROM Sach s
-    LEFT JOIN SachTheLoai st ON s.MaSach = st.MaSach
-    LEFT JOIN TheLoai tl ON st.MaTheLoai = tl.MaTheLoai
-    WHERE 
-        s.TieuDe LIKE '%' + @TuKhoa + '%'
-        OR s.TacGia LIKE '%' + @TuKhoa + '%'
-        OR s.NamXB LIKE '%' + @TuKhoa + '%'
-        OR s.NgonNgu LIKE '%' + @TuKhoa + '%'
-        OR EXISTS (
-            SELECT 1 
-            FROM SachTheLoai st2
-            JOIN TheLoai tl2 ON st2.MaTheLoai = tl2.MaTheLoai
-            WHERE st2.MaSach = s.MaSach
-            AND tl2.TenTheLoai LIKE '%' + @TuKhoa + '%'
-        )
-    GROUP BY 
-        s.MaSach, s.TieuDe, s.TacGia, 
-        s.NamXB, s.NgonNgu, s.SoLuongSach, s.HinhAnh
+    WHERE s.MaSach = @MaSach;
 END
+GO
 -- Giảm số lượng sách khi mượn
 CREATE PROCEDURE sp_GiamSoLuongSach
 	@MaSach NVARCHAR(20),
