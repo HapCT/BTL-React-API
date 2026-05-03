@@ -42,14 +42,14 @@ namespace QuanLyThueSach.Models
     public class MuonOline
     {
         public string MaBanDoc { get; set; }
-        public string MaBanSao { get; set; } 
+        public string MaSach { get; set; }   // ← đổi từ MaBanSao sang MaSach
         public DateTime HanTra { get; set; }
     }
     public class TaoPhieuMuonOfflineRequest
     {
         public string MaBanDoc { get; set; }
         public string MaBanSao { get; set; }
-        public DateOnly NgayTao { get; set; }
+        public DateTime NgayTao { get; set; }
         public DateTime NgayMuon { get; set; } 
         public DateTime HanTra { get; set; }
     }

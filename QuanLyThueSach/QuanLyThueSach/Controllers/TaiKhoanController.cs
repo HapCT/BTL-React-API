@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuanLyThueSach.Models;
 using static QuanLyThueSach.BLL.BanDocBLL;
 using static QuanLyThueSach.BLL.TaiKhoanBLL;
+
 namespace QuanLyThueSach.Controllers
 {
     [Route("api/[controller]")]
@@ -15,7 +17,9 @@ namespace QuanLyThueSach.Controllers
         {
             _TaiKhoanService = TaiKhoanService;
         }
+
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -28,7 +32,9 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
         [HttpGet("{tentaikhoan}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetTaiKhoanId(string tentaikhoan)
         {
             try
@@ -41,7 +47,9 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
         [HttpPost("dangky-thuthu")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateTaiKhoan model)
         {
             try
@@ -52,10 +60,12 @@ namespace QuanLyThueSach.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
-
             }
         }
+
+        // Đăng ký public — không cần token
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> DangKy(DangKyModel dangky)
         {
             try
@@ -68,7 +78,9 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
         [HttpPut("doi-mat-khau/{TenTaiKhoan}")]
+        [Authorize]
         public async Task<IActionResult> DoiMatKhau(string TenTaiKhoan, DoiMatKhauModel model)
         {
             try
@@ -78,7 +90,6 @@ namespace QuanLyThueSach.Controllers
                     model.MatKhauCu,
                     model.MatKhauMoi
                 );
-
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)
@@ -86,7 +97,9 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
         [HttpDelete("{TenTaiKhoan}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> XoaTaiKhoan(string TenTaiKhoan)
         {
             try
@@ -99,31 +112,14 @@ namespace QuanLyThueSach.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        // Đăng nhập public — không cần token
         [HttpPost("dang-nhap")]
-        public async Task<Respon<object>> DangNhapAsync(DangNhapModel model)
+        [AllowAnonymous]
+        public async Task<IActionResult> DangNhapAsync(DangNhapModel model)
         {
-            var user = await _TaiKhoanService.DangNhapAsync(
-                model.TenTaiKhoan,
-                model.MatKhau
-                );
-
-            if (user == null)
-            {
-                return new Respon<object>
-                {
-                    StatusCode = 401,
-                    Message = "Sai tài khoản hoặc mật khẩu"
-                };
-            }
-
-            return new Respon<object>
-            {
-                StatusCode = 200,
-                Message = "Đăng nhập thành công",
-                Data = user
-            };
+            var response = await _TaiKhoanService.DangNhapAsync(model.TenTaiKhoan, model.MatKhau);
+            return StatusCode(response.StatusCode, response);
         }
-
-
     }
 }

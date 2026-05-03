@@ -6,6 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static QuanLyThueSach.DAL.TaiKhoanDAL;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using BCrypt.Net;
+
 namespace QuanLyThueSach.BLL
 {
     public class TaiKhoanBLL
@@ -14,20 +20,46 @@ namespace QuanLyThueSach.BLL
         {
             Task<Respon<List<TaiKhoanModel>>> GetAsync();
             Task<Respon<int>> DangKyAsync(string tenTaiKhoan, string matKhau, string hoTen, string cccd, string soDienThoai, string email);
-            Task<Respon<TaiKhoanModel>> DangNhapAsync(string tenTaiKhoan, string matKhau);
+            Task<Respon<object>> DangNhapAsync(string tenTaiKhoan, string matKhau);
             Task<Respon<List<TaiKhoanModel>>> SearchAsync(string tuKhoa);
             Task<Respon<int>> DoiMatKhauAsync(string tenTaiKhoan, string matKhauCu, string matKhauMoi);
             Task<Respon<int>> XoaTaiKhoanAsync(string tenTaiKhoan);
             Task<Respon<int>> CreateAsync(CreateTaiKhoan model);
-
         }
+
         public class TaiKhoanService : ITaiKhoanServices
         {
             private readonly ITaiKhoanRepository _repository;
+            private readonly IConfiguration _config;
 
-            public TaiKhoanService(ITaiKhoanRepository repository)
+            public TaiKhoanService(ITaiKhoanRepository repository, IConfiguration config)
             {
                 _repository = repository;
+                _config = config;
+            }
+
+            private string GenerateJwtToken(TaiKhoanModel user)
+            {
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var expireHours = int.Parse(_config["Jwt:ExpireHours"] ?? "8");
+
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.Name, user.TenTaiKhoan),
+                    new Claim(ClaimTypes.Role, user.VaiTro),
+                    new Claim("hoTen", user.HoTen ?? ""),
+                };
+
+                var token = new JwtSecurityToken(
+                    issuer: _config["Jwt:Issuer"],
+                    audience: _config["Jwt:Audience"],
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddHours(expireHours),
+                    signingCredentials: creds
+                );
+
+                return new JwtSecurityTokenHandler().WriteToken(token);
             }
 
             public async Task<Respon<List<TaiKhoanModel>>> GetAsync()
@@ -67,7 +99,10 @@ namespace QuanLyThueSach.BLL
                         };
                     }
 
-                    var result = await _repository.DangKyAsync(tenTaiKhoan, matKhau, hoTen, cccd, soDienThoai, email);
+                    // Hash mật khẩu trước khi lưu
+                    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(matKhau);
+
+                    var result = await _repository.DangKyAsync(tenTaiKhoan, hashedPassword, hoTen, cccd, soDienThoai, email);
 
                     return new Respon<int>
                     {
@@ -87,30 +122,53 @@ namespace QuanLyThueSach.BLL
                 }
             }
 
-            public async Task<Respon<TaiKhoanModel>> DangNhapAsync(string tenTaiKhoan, string matKhau)
+            public async Task<Respon<object>> DangNhapAsync(string tenTaiKhoan, string matKhau)
             {
                 try
                 {
-                    var list = await _repository.DangNhapAsync(tenTaiKhoan, matKhau);
-                    if (list == null)
+                    var user = await _repository.DangNhapAsync(tenTaiKhoan, matKhau);
+
+                    if (user == null)
                     {
-                        return new Respon<TaiKhoanModel>
+                        return new Respon<object>
                         {
                             StatusCode = 401,
                             Message = "Sai tài khoản hoặc mật khẩu",
                             Data = null
                         };
                     }
-                    return new Respon<TaiKhoanModel>
+
+                    // Verify BCrypt password
+                    bool isPasswordValid = BCrypt.Net.BCrypt.Verify(matKhau, user.MatKhau);
+                    if (!isPasswordValid)
+                    {
+                        return new Respon<object>
+                        {
+                            StatusCode = 401,
+                            Message = "Sai tài khoản hoặc mật khẩu",
+                            Data = null
+                        };
+                    }
+
+                    var token = GenerateJwtToken(user);
+
+                    return new Respon<object>
                     {
                         StatusCode = 200,
                         Message = "Đăng nhập thành công",
-                        Data = list
+                        Data = new
+                        {
+                            tenTaiKhoan = user.TenTaiKhoan,
+                            vaiTro = user.VaiTro,
+                            hoTen = user.HoTen,
+                            maBanDoc = user.MaBanDoc,  // ← THÊM MỚI
+                            token = token
+                        }
                     };
                 }
                 catch (Exception ex)
                 {
-                    return new Respon<TaiKhoanModel>
+                    return new Respon<object>
                     {
                         StatusCode = 500,
                         Message = $"Lỗi: {ex.Message}",
@@ -139,7 +197,6 @@ namespace QuanLyThueSach.BLL
                         Message = "Lấy dữ liệu thành công",
                         Data = list
                     };
-
                 }
                 catch (Exception ex)
                 {
@@ -156,14 +213,27 @@ namespace QuanLyThueSach.BLL
             {
                 try
                 {
-                    var list = await _repository.DoiMatKhauAsync(tenTaiKhoan, matKhauCu, matKhauMoi);
+                    // Lấy user để verify mật khẩu cũ
+                    var user = await _repository.DangNhapAsync(tenTaiKhoan, matKhauCu);
+                    if (user == null || !BCrypt.Net.BCrypt.Verify(matKhauCu, user.MatKhau))
+                    {
+                        return new Respon<int>
+                        {
+                            StatusCode = 400,
+                            Message = "Mật khẩu cũ không đúng",
+                            Data = 0
+                        };
+                    }
+
+                    var hashedNew = BCrypt.Net.BCrypt.HashPassword(matKhauMoi);
+                    var result = await _repository.DoiMatKhauAsync(tenTaiKhoan, matKhauCu, hashedNew);
+
                     return new Respon<int>
                     {
                         StatusCode = 200,
-                        Message = "Đổi mật khẩu thành công thành công",
-                        Data = list
+                        Message = "Đổi mật khẩu thành công",
+                        Data = result
                     };
-
                 }
                 catch (Exception ex)
                 {
@@ -180,12 +250,12 @@ namespace QuanLyThueSach.BLL
             {
                 try
                 {
-                    var list = await _repository.XoaTaiKhoanAsync(tenTaiKhoan);
+                    var result = await _repository.XoaTaiKhoanAsync(tenTaiKhoan);
                     return new Respon<int>
                     {
                         StatusCode = 200,
-                        Message = "Xoá tài khoản thành công thành công",
-                        Data = list
+                        Message = "Xoá tài khoản thành công",
+                        Data = result
                     };
                 }
                 catch (Exception ex)
@@ -203,12 +273,14 @@ namespace QuanLyThueSach.BLL
             {
                 try
                 {
-                    var list = await _repository.CreateAsync(model);
+                    // Hash mật khẩu khi admin tạo tài khoản thủ công
+                    model.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau);
+                    var result = await _repository.CreateAsync(model);
                     return new Respon<int>
                     {
                         StatusCode = 200,
-                        Message = "Tạo tài khoản thành công thành công",
-                        Data = list
+                        Message = "Tạo tài khoản thành công",
+                        Data = result
                     };
                 }
                 catch (Exception ex)

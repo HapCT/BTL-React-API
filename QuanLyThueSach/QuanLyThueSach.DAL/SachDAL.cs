@@ -183,7 +183,7 @@ namespace QuanLyThueSach.DAL
                     FROM Sach s
                     JOIN BanSao bs ON s.MaSach = bs.MaSach
                     JOIN PhieuMuon pm ON bs.MaBanSao = pm.MaBanSao
-                    WHERE pm.TrangThai = N'Đã trả'
+                    WHERE pm.TrangThai IN (N'Đã trả', N'Đã nhận sách', N'Quá hạn')
                     GROUP BY s.MaSach, s.TieuDe, s.TacGia,
                              s.NamXB, s.NgonNgu, s.SoLuongSach, s.HinhAnh
                     ORDER BY LuotThue DESC";

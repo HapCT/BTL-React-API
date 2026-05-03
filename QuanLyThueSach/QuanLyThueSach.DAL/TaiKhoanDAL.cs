@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace QuanLyThueSach.DAL
 {
-   
+
     public class TaiKhoanDAL
     {
         public interface ITaiKhoanRepository
@@ -84,7 +84,8 @@ namespace QuanLyThueSach.DAL
                     {
                         TenTaiKhoan = rd.GetString(0),
                         MatKhau = rd.GetString(1),
-                        VaiTro = rd.GetString(2)
+                        VaiTro = rd.GetString(2),
+                        MaBanDoc = rd.IsDBNull(3) ? null : rd.GetString(3)
                     };
                 }
                 return null;
@@ -98,15 +99,16 @@ namespace QuanLyThueSach.DAL
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@TenTaiKhoan", tentaiKhoan);
                 using var rd = await cmd.ExecuteReaderAsync();
-                while (await rd.ReadAsync()) {
-                        list.Add(new TaiKhoanModel
-                        {
-                            TenTaiKhoan = rd.GetString(0),
-                            MatKhau = rd.GetString(1),
-                            VaiTro = rd.GetString(2),
-                            HoTen = rd.IsDBNull(3) ? null : rd.GetString(3)
-                        });
-                        return list;
+                while (await rd.ReadAsync())
+                {
+                    list.Add(new TaiKhoanModel
+                    {
+                        TenTaiKhoan = rd.GetString(0),
+                        MatKhau = rd.GetString(1),
+                        VaiTro = rd.GetString(2),
+                        HoTen = rd.IsDBNull(3) ? null : rd.GetString(3)
+                    });
+                    return list;
                 }
                 return null!;
             }
@@ -144,6 +146,6 @@ namespace QuanLyThueSach.DAL
                 return await cmd.ExecuteNonQueryAsync();
             }
         }
-        
+
     }
 }

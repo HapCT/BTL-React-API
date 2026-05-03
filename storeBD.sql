@@ -332,35 +332,20 @@ BEGIN
 END
 GO 
 
-CREATE OR ALTER PROCEDURE sp_DangNhap
-    @TenTaiKhoan NVARCHAR(20),
+ALTER PROCEDURE sp_DangNhap
+    @TenTaiKhoan NVARCHAR(50),
     @MatKhau NVARCHAR(255)
 AS
 BEGIN
-    -- kiểm tra tài khoản
-    IF NOT EXISTS (
-        SELECT 1 
-        FROM TaiKhoan 
-        WHERE TenTaiKhoan = @TenTaiKhoan 
-        AND MatKhau = @MatKhau
-    )
-    BEGIN
-        SELECT 
-            N'Sai tài khoản hoặc mật khẩu' AS Message,
-            0 AS Status
-        RETURN
-    END
-
-    -- trả dữ liệu user
     SELECT 
-        tk.TenTaiKhoan,
-		tk.MatKhau,	
-        tk.VaiTro,
-        1 AS Status
-    FROM TaiKhoan tk
-    WHERE tk.TenTaiKhoan = @TenTaiKhoan
-    AND tk.MatKhau = @MatKhau
+        TenTaiKhoan,
+        MatKhau,
+        VaiTro,
+        MaBanDoc
+    FROM TaiKhoan
+    WHERE TenTaiKhoan = @TenTaiKhoan
 END
+GO
 GO 
 CREATE PROCEDURE sp_DoiMatKhau
     @TenTaiKhoan NVARCHAR(20),
@@ -1154,12 +1139,11 @@ BEGIN
         RAISERROR(N'Sách không khả dụng',16,1)
     END
 END
-ALTER PROCEDURE sp_TuDongHuyPhieuMuon
+CREATE OR ALTER PROCEDURE sp_TuDongHuyPhieuMuon
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- cập nhật trạng thái
     UPDATE PhieuMuon
     SET TrangThai = N'Huỷ'
     WHERE 
@@ -1167,13 +1151,14 @@ BEGIN
         AND NgayMuon IS NULL
         AND DATEDIFF(DAY, NgayTao, GETDATE()) >= 2
 
-    -- trả sách về kho
     UPDATE bs
     SET TrangThai = N'Trong kho'
     FROM BanSao bs
     JOIN PhieuMuon pm ON bs.MaBanSao = pm.MaBanSao
     WHERE pm.TrangThai = N'Huỷ'
+    AND bs.TrangThai = N'Đang mượn'  -- ✅ thêm điều kiện này
 END
+GO
 
 -- Xem phiếu mượn theo id 
 CREATE PROCEDURE sp_XemPhieuMuon
@@ -1252,6 +1237,7 @@ CREATE OR ALTER PROCEDURE sp_TaoPhieuMuon_Offline
     @MaBanDoc NVARCHAR(20),
     @MaBanSao NVARCHAR(20),
     @NgayMuon DATE,
+	@NgayTao DATE,
     @HanTra DATE
 AS
 BEGIN
@@ -1288,7 +1274,8 @@ BEGIN
             @NgayMuon,
             @HanTra,
             0,
-            N'Đã nhận sách'
+            N'Đã nhận sách',
+			GETDATE()
         );
 
         UPDATE BanSao
@@ -1363,10 +1350,11 @@ CREATE PROCEDURE sp_HuyPhieuMuon
     @MaPhieuMuon NVARCHAR(20)
 AS
 BEGIN
-    UPDATE PhieuMuon
-    SET TrangThai = N'Huỷ'
-	WHERE TrangThai LIKE N'%Đăng%'
-    AND TrangThai = N'Đăng ký mượn'
+-- ✅ Sửa
+	UPDATE PhieuMuon
+	SET TrangThai = N'Huỷ'
+	WHERE TrangThai = N'Đăng ký mượn'
+	AND MaPhieuMuon = @MaPhieuMuon  -- ← còn thiếu cái này nữa!
 END
 
 --Xoá
@@ -2158,3 +2146,150 @@ BEGIN
         @TienPhat AS TienPhat,
         @TongTien AS TongTien
 END
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'HoaDonNhap')
+BEGIN
+    CREATE TABLE HoaDonNhap (
+        MaHoaDonNhap    NVARCHAR(20)    PRIMARY KEY,
+        NhaCungCap      NVARCHAR(200)   NOT NULL,
+        NguoiNhap       NVARCHAR(100)   NULL,
+        NgayNhap        DATE            NOT NULL DEFAULT GETDATE(),
+        TongTien        DECIMAL(18, 0)  NOT NULL DEFAULT 0,
+        GhiChu          NVARCHAR(500)   NULL
+    );
+END
+GO
+
+-- 2. Tạo bảng ChiTietHoaDonNhap
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ChiTietHoaDonNhap')
+BEGIN
+    CREATE TABLE ChiTietHoaDonNhap (
+        ID              INT             IDENTITY(1,1) PRIMARY KEY,
+        MaHoaDonNhap    NVARCHAR(20)    NOT NULL REFERENCES HoaDonNhap(MaHoaDonNhap) ON DELETE CASCADE,
+        MaSach          NVARCHAR(20)    NOT NULL REFERENCES Sach(MaSach),
+        SoLuong         INT             NOT NULL DEFAULT 1,
+        DonGia          DECIMAL(18, 0)  NOT NULL DEFAULT 0,
+        ThanhTien       DECIMAL(18, 0)  NOT NULL DEFAULT 0
+    );
+END
+GO
+
+-- ============================================================
+-- SP: Lấy danh sách hóa đơn nhập (kèm số dòng sách)
+-- ============================================================
+CREATE OR ALTER PROCEDURE sp_GetHoaDonNhap
+AS
+BEGIN
+    SELECT 
+        h.MaHoaDonNhap,
+        h.NhaCungCap,
+        h.NguoiNhap,
+        h.NgayNhap,
+        h.TongTien,
+        h.GhiChu,
+        COUNT(c.ID) AS SoSach
+    FROM HoaDonNhap h
+    LEFT JOIN ChiTietHoaDonNhap c ON h.MaHoaDonNhap = c.MaHoaDonNhap
+    GROUP BY 
+        h.MaHoaDonNhap, h.NhaCungCap, h.NguoiNhap, 
+        h.NgayNhap, h.TongTien, h.GhiChu
+    ORDER BY h.NgayNhap DESC;
+END
+GO
+
+-- ============================================================
+-- SP: Lấy chi tiết 1 hóa đơn nhập (2 result sets)
+-- ============================================================
+CREATE OR ALTER PROCEDURE sp_GetHoaDonNhapById
+    @MaHoaDonNhap NVARCHAR(20)
+AS
+BEGIN
+    -- RS1: Header
+    SELECT 
+        MaHoaDonNhap, NhaCungCap, NguoiNhap, NgayNhap, TongTien, GhiChu
+    FROM HoaDonNhap
+    WHERE MaHoaDonNhap = @MaHoaDonNhap;
+
+    -- RS2: Chi tiết sách
+    SELECT 
+        c.MaSach,
+        s.TieuDe AS TenSach,
+        c.SoLuong,
+        c.DonGia,
+        c.ThanhTien
+    FROM ChiTietHoaDonNhap c
+    LEFT JOIN Sach s ON c.MaSach = s.MaSach
+    WHERE c.MaHoaDonNhap = @MaHoaDonNhap;
+END
+GO
+
+-- ============================================================
+-- SP: Thêm hóa đơn nhập (header)
+-- ============================================================
+CREATE OR ALTER PROCEDURE sp_ThemHoaDonNhap
+    @MaHoaDonNhap   NVARCHAR(20),
+    @NhaCungCap     NVARCHAR(200),
+    @NguoiNhap      NVARCHAR(100),
+    @NgayNhap       DATE,
+    @TongTien       DECIMAL(18, 0),
+    @GhiChu         NVARCHAR(500)
+AS
+BEGIN
+    INSERT INTO HoaDonNhap (MaHoaDonNhap, NhaCungCap, NguoiNhap, NgayNhap, TongTien, GhiChu)
+    VALUES (@MaHoaDonNhap, @NhaCungCap, @NguoiNhap, @NgayNhap, @TongTien, @GhiChu);
+END
+GO
+
+-- ============================================================
+-- SP: Thêm chi tiết hóa đơn nhập
+-- ============================================================
+CREATE OR ALTER PROCEDURE sp_ThemChiTietHoaDonNhap
+    @MaHoaDonNhap   NVARCHAR(20),
+    @MaSach         NVARCHAR(20),
+    @SoLuong        INT,
+    @DonGia         DECIMAL(18, 0),
+    @ThanhTien      DECIMAL(18, 0)
+AS
+BEGIN
+    INSERT INTO ChiTietHoaDonNhap (MaHoaDonNhap, MaSach, SoLuong, DonGia, ThanhTien)
+    VALUES (@MaHoaDonNhap, @MaSach, @SoLuong, @DonGia, @ThanhTien);
+
+    -- Cập nhật SoLuongSach trong bảng Sach
+    UPDATE Sach
+    SET SoLuongSach = SoLuongSach + @SoLuong
+    WHERE MaSach = @MaSach;
+END
+GO
+
+-- ============================================================
+-- SP: Sửa hóa đơn nhập (header)
+-- ============================================================
+CREATE OR ALTER PROCEDURE sp_SuaHoaDonNhap
+    @MaHoaDonNhap   NVARCHAR(20),
+    @NhaCungCap     NVARCHAR(200),
+    @NguoiNhap      NVARCHAR(100),
+    @NgayNhap       DATE,
+    @TongTien       DECIMAL(18, 0),
+    @GhiChu         NVARCHAR(500)
+AS
+BEGIN
+    UPDATE HoaDonNhap
+    SET 
+        NhaCungCap  = @NhaCungCap,
+        NguoiNhap   = @NguoiNhap,
+        NgayNhap    = @NgayNhap,
+        TongTien    = @TongTien,
+        GhiChu      = @GhiChu
+    WHERE MaHoaDonNhap = @MaHoaDonNhap;
+END
+GO
+
+-- ============================================================
+-- SP: Xóa hóa đơn nhập (ON DELETE CASCADE tự xóa chi tiết)
+-- ============================================================
+CREATE OR ALTER PROCEDURE sp_XoaHoaDonNhap
+    @MaHoaDonNhap NVARCHAR(20)
+AS
+BEGIN
+    DELETE FROM HoaDonNhap WHERE MaHoaDonNhap = @MaHoaDonNhap;
+END
+GO

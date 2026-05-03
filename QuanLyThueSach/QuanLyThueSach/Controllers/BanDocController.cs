@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using static QuanLyThueSach.BLL.BanDocBLL;
 using QuanLyThueSach.Models;
 
@@ -7,6 +8,7 @@ namespace QuanLyThueSach.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BanDocController : ControllerBase
     {
         private readonly IBanDocServices _banDocService;

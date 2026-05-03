@@ -274,6 +274,85 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "QuanLyThueSach.Controllers.HoaDonNhapController",
+    "Method": "GetAll",
+    "RelativePath": "api/HoaDonNhap",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.HoaDonNhapController",
+    "Method": "Create",
+    "RelativePath": "api/HoaDonNhap",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.HoaDonNhapRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.HoaDonNhapController",
+    "Method": "GetById",
+    "RelativePath": "api/HoaDonNhap/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.HoaDonNhapController",
+    "Method": "Update",
+    "RelativePath": "api/HoaDonNhap/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "QuanLyThueSach.Models.HoaDonNhapRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.HoaDonNhapController",
+    "Method": "Delete",
+    "RelativePath": "api/HoaDonNhap/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "QuanLyThueSach.Controllers.KeSachController",
     "Method": "GetAll",
     "RelativePath": "api/KeSach",
@@ -848,17 +927,7 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "QuanLyThueSach.Models.Respon\u00601[[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "QuanLyThueSach.Controllers.TaiKhoanController",
@@ -1080,6 +1149,56 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThongKeController",
+    "Method": "BanDocTichCuc",
+    "RelativePath": "api/ThongKe/ban-doc-tich-cuc",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThongKeController",
+    "Method": "DoanhThu",
+    "RelativePath": "api/ThongKe/doanh-thu",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThongKeController",
+    "Method": "SachMuonNhieu",
+    "RelativePath": "api/ThongKe/sach-muon-nhieu",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThongKeController",
+    "Method": "TheoTheLoai",
+    "RelativePath": "api/ThongKe/the-loai",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QuanLyThueSach.Controllers.ThongKeController",
+    "Method": "TongQuan",
+    "RelativePath": "api/ThongKe/tong-quan",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "Xc84GU42sZ8=",
+  "dgSpecHash": "ps/bI2ddCZ4=",
   "success": true,
   "projectFilePath": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.BLL\\QuanLyThueSach.BLL.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\phamh\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\phamh\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
+    "C:\\Users\\phamh\\.nuget\\packages\\bcrypt.net-next\\4.1.0\\bcrypt.net-next.4.1.0.nupkg.sha512",
     "C:\\Users\\phamh\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "C:\\Users\\phamh\\.nuget\\packages\\fluentvalidation\\11.5.2\\fluentvalidation.11.5.2.nupkg.sha512",
     "C:\\Users\\phamh\\.nuget\\packages\\ipaddressrange\\6.0.0\\ipaddressrange.6.0.0.nupkg.sha512",

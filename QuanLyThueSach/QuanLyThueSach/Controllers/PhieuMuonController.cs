@@ -38,13 +38,7 @@ namespace QuanLyThueSach.Controllers
             try
             {
                 var response = await _phieuMuonService.GetByBanDocAsync(maBanDoc);
-
-                if (response.Data == null || response.Data.Count == 0)
-                {
-                    return NotFound("Không có phiếu mượn");
-                }
-
-                return Ok(response);
+                return Ok(response); // ← bỏ check null, luôn trả 200
             }
             catch (Exception ex)
             {

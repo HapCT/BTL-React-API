@@ -130,7 +130,7 @@ namespace QuanLyThueSach.DAL
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@MaBanDoc", muonOnline.MaBanDoc);
-                cmd.Parameters.AddWithValue("@MaBanSao", muonOnline.MaBanSao);
+                cmd.Parameters.AddWithValue("@MaSach", muonOnline.MaSach);
                 cmd.Parameters.AddWithValue("@HanTra", muonOnline.HanTra);
 
                 return await cmd.ExecuteNonQueryAsync();

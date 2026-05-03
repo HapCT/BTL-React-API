@@ -1,6 +1,7 @@
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\bin\Debug\net8.0\QuanLyThueSach.Models.deps.json
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\bin\Debug\net8.0\QuanLyThueSach.Models.dll
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\bin\Debug\net8.0\QuanLyThueSach.Models.pdb
+D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.csproj.AssemblyReference.cache
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.GeneratedMSBuildEditorConfig.editorconfig
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.AssemblyInfoInputs.cache
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.AssemblyInfo.cs
@@ -9,4 +10,3 @@ D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSac
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\refint\QuanLyThueSach.Models.dll
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.pdb
 D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\ref\QuanLyThueSach.Models.dll
-D:\BTL React\QuanLyThueSach\QuanLyThueSach.Models\obj\Debug\net8.0\QuanLyThueSach.Models.csproj.AssemblyReference.cache

@@ -21,7 +21,17 @@ CREATE TABLE BanDoc
 		AND CCCD NOT LIKE '%[^0-9]%'
 	)
 )
+-- Xem cột của bảng TaiKhoan
+SELECT COLUMN_NAME, DATA_TYPE 
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'TaiKhoan'
+ORDER BY ORDINAL_POSITION;
 
+-- Xem cột của bảng BanDoc
+SELECT COLUMN_NAME, DATA_TYPE 
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'BanDoc'
+ORDER BY ORDINAL_POSITION;
 GO
 INSERT INTO TaiKhoan
 (
@@ -182,3 +192,12 @@ CREATE TABLE SachTheLoai
     FOREIGN KEY (MaSach) REFERENCES Sach(MaSach),
     FOREIGN KEY (MaTheLoai) REFERENCES TheLoai(MaTheLoai)
 )
+-- Fix BS0004 và BS0009 về Trong kho
+UPDATE BanSao
+SET TrangThai = N'Trong kho'
+WHERE MaBanSao IN ('BS0004', 'BS0009')
+-- Tìm phiếu đang mượn thực sự (nếu có)
+SELECT pm.MaPhieuMuon, pm.MaBanSao, pm.TrangThai, bs.TrangThai AS TrangThaiBanSao
+FROM PhieuMuon pm
+JOIN BanSao bs ON pm.MaBanSao = bs.MaBanSao
+WHERE bs.TrangThai = N'Đang mượn'
