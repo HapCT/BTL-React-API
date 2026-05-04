@@ -126,7 +126,8 @@ namespace QuanLyThueSach.DAL
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
 
-                using var cmd = new SqlCommand("sp_DangKyMuon", connect);
+                // Dùng SP riêng cho online: tự chọn MaBanSao từ MaSach
+                using var cmd = new SqlCommand("sp_DangKyMuonOnline", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@MaBanDoc", muonOnline.MaBanDoc);

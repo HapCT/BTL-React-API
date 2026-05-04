@@ -46,9 +46,9 @@ namespace QuanLyThueSach.Controllers
 
                 if (result.StatusCode == 200)
                 {
-                    return Ok("Đặt chỗ thành công");
+                    return Ok(result.Message);
                 }
-                return BadRequest("Đặt chỗ thất bại");
+                return BadRequest(result.Message);
             }
             catch (Exception ex)
             {

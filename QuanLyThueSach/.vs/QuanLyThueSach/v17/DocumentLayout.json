@@ -246,23 +246,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\ApiGateWay\\appsettings.json",
-              "RelativeDocumentMoniker": "ApiGateWay\\appsettings.json",
-              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\ApiGateWay\\appsettings.json",
-              "RelativeToolTip": "ApiGateWay\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-05-03T12:33:30.695Z"
             },
             {
               "$type": "Document",
@@ -286,8 +274,7 @@
               "RelativeToolTip": "QuanLyThueSach\\Controllers\\PhieuMuonController.cs",
               "ViewState": "AgIAABkAAAAAAAAAAAASwCEAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-20T07:56:26.216Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-20T07:56:26.216Z"
             },
             {
               "$type": "Document",
@@ -309,10 +296,22 @@
               "RelativeDocumentMoniker": "QuanLyThueSach.DAL\\TaiKhoanDAL.cs",
               "ToolTip": "D:\\BTL React\\QuanLyThueSach\\QuanLyThueSach.DAL\\TaiKhoanDAL.cs",
               "RelativeToolTip": "QuanLyThueSach.DAL\\TaiKhoanDAL.cs",
-              "ViewState": "AgIAAD4AAAAAAAAAAAAqwJYAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAiwJYAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-13T04:18:12.935Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\BTL React\\QuanLyThueSach\\ApiGateWay\\appsettings.json",
+              "RelativeDocumentMoniker": "ApiGateWay\\appsettings.json",
+              "ToolTip": "D:\\BTL React\\QuanLyThueSach\\ApiGateWay\\appsettings.json",
+              "RelativeToolTip": "ApiGateWay\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-03T12:33:30.695Z"
             },
             {
               "$type": "Document",
@@ -336,8 +335,7 @@
               "RelativeToolTip": "QuanLyThueSach.Models\\TaiKhoanModel.cs",
               "ViewState": "AgIAABcAAAAAAAAAAAA7wC4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-13T04:04:52.082Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-13T04:04:52.082Z"
             },
             {
               "$type": "Document",
@@ -361,8 +359,7 @@
               "RelativeToolTip": "QuanLyThueSach.BLL\\TaiKhoanBLL.cs",
               "ViewState": "AgIAAOsAAAAAAAAAAAAQwCkBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-13T07:04:59.102Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-13T07:04:59.102Z"
             },
             {
               "$type": "Document",
