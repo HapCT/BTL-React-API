@@ -45,9 +45,10 @@ namespace QuanLyThueSach.Models
     public class ThanhToanRequest
     {
         public string MaPhieuMuon { get; set; }
-
         public string HinhThucThanhToan { get; set; }
         public string GhiChu { get; set; }
+        /// <summary>Số tiền khách thực trả. Nếu null → trả đủ. Nếu < TongTien → phần còn lại vào DuNo.</summary>
+        public decimal? SoTienTra { get; set; }
     }
 
     public class HoaDon

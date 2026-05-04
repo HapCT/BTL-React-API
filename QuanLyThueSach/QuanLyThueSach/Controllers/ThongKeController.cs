@@ -114,8 +114,8 @@ namespace QuanLyThueSach.Controllers
                         maBanDoc = rd["MaBanDoc"].ToString(),
                         hoTen = rd["HoTen"].ToString(),
                         soDienThoai = rd["SoDienThoai"].ToString(),
-                        duNo = Convert.ToDecimal(rd["DuNo"]),
-                        soLanMuon = Convert.ToInt32(rd["SoLanMuon"])
+                        duNo = rd["DuNo"] == DBNull.Value ? 0 : Convert.ToDecimal(rd["DuNo"]),
+                        soLanMuon = rd["SoLanMuon"] == DBNull.Value ? 0 : Convert.ToInt32(rd["SoLanMuon"])
                     });
 
                 return Ok(new { data = list });

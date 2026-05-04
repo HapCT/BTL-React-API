@@ -46,9 +46,13 @@ namespace QuanLyThueSach.Controllers
 
                 if (result.StatusCode == 200)
                 {
-                    return Ok(result.Message);
+                    return Ok(new
+                    {
+                        ketQua = result.Data?.KetQua,
+                        thongBao = result.Message
+                    });
                 }
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
             }
             catch (Exception ex)
             {

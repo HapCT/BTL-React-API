@@ -7,7 +7,7 @@ namespace QuanLyThueSach.BLL
         public interface IDatChoServices
         {
             Task<Respon<List<DatChoViewModel>>> GetAsync();
-            Task<Respon<int>> DatChoAsync(TaoDatChoRequest request);
+            Task<Respon<DatChoKetQua>> DatChoAsync(TaoDatChoRequest request);
             Task<Respon<int>> HuyDatChoAsync(string maDatCho);
             Task<Respon<int>> HetHanDatChoAsync();
             Task<Respon<int>> TuDongMuonAsync(string maSach);
@@ -48,26 +48,26 @@ namespace QuanLyThueSach.BLL
             }
 
             // 🔹 Đặt chỗ
-            public async Task<Respon<int>> DatChoAsync(TaoDatChoRequest request)
+            public async Task<Respon<DatChoKetQua>> DatChoAsync(TaoDatChoRequest request)
             {
                 try
                 {
                     var result = await _repository.DatChoAsync(request);
 
-                    return new Respon<int>
+                    return new Respon<DatChoKetQua>
                     {
                         StatusCode = 200,
-                        Message = "Đặt chỗ thành công",
+                        Message = result.ThongBao,
                         Data = result
                     };
                 }
                 catch (Exception ex)
                 {
-                    return new Respon<int>
+                    return new Respon<DatChoKetQua>
                     {
                         StatusCode = 500,
-                        Message = $"Lỗi: {ex.Message}",
-                        Data = 0
+                        Message = ex.Message,
+                        Data = null
                     };
                 }
             }

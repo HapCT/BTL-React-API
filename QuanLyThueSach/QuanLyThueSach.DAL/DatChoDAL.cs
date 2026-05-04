@@ -10,7 +10,7 @@ namespace QuanLyThueSach.DAL
         public interface IDatChoRepository
         {
             Task<List<DatChoViewModel>> GetAsync();
-            Task<int> DatChoAsync(TaoDatChoRequest request);
+            Task<DatChoKetQua> DatChoAsync(TaoDatChoRequest request);
             Task<int> HuyDatChoAsync(string maDatCho);
             Task<int> HetHanDatChoAsync();
             Task<int> TuDongMuonAsync(string maSach);
@@ -57,7 +57,7 @@ namespace QuanLyThueSach.DAL
             }
 
             // 🔹 Đặt chỗ
-            public async Task<int> DatChoAsync(TaoDatChoRequest request)
+            public async Task<DatChoKetQua> DatChoAsync(TaoDatChoRequest request)
             {
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
@@ -68,7 +68,18 @@ namespace QuanLyThueSach.DAL
                 cmd.Parameters.AddWithValue("@MaBanDoc", request.MaBanDoc);
                 cmd.Parameters.AddWithValue("@MaSach", request.MaSach);
 
-                return await cmd.ExecuteNonQueryAsync();
+                // sp_DatCho SELECT KetQua, ThongBao ra → phải dùng ExecuteReader
+                using var rd = await cmd.ExecuteReaderAsync();
+                if (await rd.ReadAsync())
+                {
+                    return new DatChoKetQua
+                    {
+                        KetQua = rd["KetQua"]?.ToString() ?? "DAT_CHO",
+                        ThongBao = rd["ThongBao"]?.ToString() ?? "Đã xử lý"
+                    };
+                }
+
+                return new  DatChoKetQua { KetQua = "DAT_CHO", ThongBao = "Đã đặt chỗ thành công" };
             }
 
             // 🔹 Huỷ đặt chỗ

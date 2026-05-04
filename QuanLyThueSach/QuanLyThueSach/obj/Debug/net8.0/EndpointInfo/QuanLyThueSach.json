@@ -2749,6 +2749,11 @@
           "ghiChu": {
             "type": "string",
             "nullable": true
+          },
+          "soTienTra": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           }
         },
         "additionalProperties": false

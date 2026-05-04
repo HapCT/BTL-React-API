@@ -113,6 +113,9 @@ namespace QuanLyThueSach.DAL
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", request.MaPhieuMuon);
                 cmd.Parameters.AddWithValue("@HinhThucThanhToan", request.HinhThucThanhToan);
                 cmd.Parameters.AddWithValue("@GhiChu", request.GhiChu ?? (object)DBNull.Value);
+                // SoTienTra: null = trả đủ, < TongTien = ghi nợ phần còn lại
+                cmd.Parameters.AddWithValue("@SoTienTra",
+                    request.SoTienTra.HasValue ? (object)request.SoTienTra.Value : DBNull.Value);
 
                 using var reader = await cmd.ExecuteReaderAsync();
 
@@ -123,7 +126,10 @@ namespace QuanLyThueSach.DAL
                         MaThanhToan = reader["MaThanhToan"],
                         TienThue = reader["TienThue"],
                         TienPhat = reader["TienPhat"],
-                        TongTien = reader["TongTien"]
+                        TongTien = reader["TongTien"],
+                        SoTienTra = reader["SoTienTra"],
+                        DuNoThem = reader["DuNoThem"],
+                        TongDuNo = reader["TongDuNo"],
                     };
                 }
 
@@ -173,4 +179,4 @@ namespace QuanLyThueSach.DAL
             }
         }
     }
-}
+}   
