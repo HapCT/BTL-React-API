@@ -1787,7 +1787,7 @@ BEGIN
 END
 GO
 
-
+SELECT * FROM PhieuMuon
 -- Huỷ 
 ALTER PROCEDURE sp_HuyPhat
     @MaPhat NVARCHAR(20)
@@ -1826,9 +1826,10 @@ EXEC sp_ThanhToanPhat
     @HinhThucThanhToan = N'Tiền mặt'
 SELECT * FROM ThanhToan
 CREATE OR ALTER PROCEDURE sp_ThanhToanPhat
-    @MaPhieuMuon NVARCHAR(20),
+    @MaPhieuMuon    NVARCHAR(20),
     @HinhThucThanhToan NVARCHAR(15),
-    @GhiChu NVARCHAR(MAX) = NULL
+    @GhiChu         NVARCHAR(MAX) = NULL,
+    @SoTienTra      DECIMAL       = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -1836,136 +1837,110 @@ BEGIN
 
     BEGIN TRY
 
-        DECLARE 
-            @MaBanDoc NVARCHAR(20),
-            @NgayMuon DATE,
-            @HanTra DATE,
-            @TienThue DECIMAL = 0,
-            @TienPhat DECIMAL = 0,
-            @TongTien DECIMAL = 0,
-            @GiaMotNgay DECIMAL = 1.500,
-            @MaThanhToan NVARCHAR(20),
-            @SoNgayMuon INT,
-            @MaBanSao NVARCHAR(20)
+        DECLARE
+            @MaBanDoc      NVARCHAR(20),
+            @NgayMuon      DATE,
+            @HanTra        DATE,
+            @MaBanSao      NVARCHAR(20),
+            @MaSach        NVARCHAR(20),
+            @TienThue      DECIMAL = 0,
+            @TienPhat      DECIMAL = 0,
+            @TongTien      DECIMAL = 0,
+            @GiaMotNgay    DECIMAL = 5000,   -- thống nhất với sp_PreviewThanhToan
+            @MaThanhToan   NVARCHAR(20),
+            @SoNgayMuon    INT
 
-        -- ❌ kiểm tra tồn tại
+        -- Kiểm tra tồn tại
         IF NOT EXISTS (SELECT 1 FROM PhieuMuon WHERE MaPhieuMuon = @MaPhieuMuon)
         BEGIN
-            RAISERROR(N'Phiếu mượn không tồn tại',16,1)
-            ROLLBACK
-            RETURN
+            RAISERROR(N'Phiếu mượn không tồn tại', 16, 1)
+            ROLLBACK RETURN
         END
 
-        -- 🔥 lấy info
-        SELECT 
+        -- Lấy thông tin phiếu
+        SELECT
             @MaBanDoc = MaBanDoc,
             @NgayMuon = NgayMuon,
-            @HanTra = HanTra,
+            @HanTra   = HanTra,
             @MaBanSao = MaBanSao
         FROM PhieuMuon
         WHERE MaPhieuMuon = @MaPhieuMuon
 
         IF (@NgayMuon IS NULL)
         BEGIN
-            RAISERROR(N'Phiếu chưa được duyệt',16,1)
-            ROLLBACK
-            RETURN
+            RAISERROR(N'Phiếu chưa được duyệt', 16, 1)
+            ROLLBACK RETURN
         END
 
-        -- 🔥 tính tiền thuê
+        -- Lấy MaSach
+        SELECT @MaSach = MaSach FROM BanSao WHERE MaBanSao = @MaBanSao
+
+        -- Tính tiền thuê
         SET @SoNgayMuon = DATEDIFF(DAY, @NgayMuon, GETDATE())
         IF (@SoNgayMuon <= 0) SET @SoNgayMuon = 1
-
         SET @TienThue = @SoNgayMuon * @GiaMotNgay
 
-        -- 🔥 tiền phạt
-        SELECT @TienPhat = ISNULL(SUM(SoTien),0)
+        -- Tiền phạt
+        SELECT @TienPhat = ISNULL(SUM(SoTien), 0)
         FROM Phat
         WHERE MaPhieuMuon = @MaPhieuMuon
-        AND TrangThai = N'Chưa thanh toán'
+          AND TrangThai = N'Chưa thanh toán'
 
         SET @TongTien = @TienThue + @TienPhat
 
-        IF (@TongTien = 0)
-        BEGIN
-            RAISERROR(N'Không có khoản cần thanh toán',16,1)
-            ROLLBACK
-            RETURN
-        END
-
-        -- ✅ tạo mã thanh toán
-        SET @MaThanhToan = 'TT' + REPLACE(LEFT(NEWID(), 8), '-', '')
-
-        -- ================= 🔥 XỬ LÝ MẤT SÁCH =================
+        -- ✅ Trả sách / xử lý mất sách
         IF EXISTS (
-            SELECT 1 
-            FROM Phat 
+            SELECT 1 FROM Phat
             WHERE MaPhieuMuon = @MaPhieuMuon
-            AND LyDoPhat LIKE N'%mất%'
+              AND LyDoPhat LIKE N'%mất%'
         )
-        BEGIN
-            -- ❗ xoá bản sao → trigger tự giảm số lượng
-            DELETE FROM BanSao
-            WHERE MaBanSao = @MaBanSao
-        END
+            DELETE FROM BanSao WHERE MaBanSao = @MaBanSao
         ELSE
         BEGIN
-            -- ❗ trả sách bình thường
-            UPDATE BanSao
-            SET TrangThai = N'Trong kho'
-            WHERE MaBanSao = @MaBanSao
+            UPDATE BanSao SET TrangThai = N'Trong kho' WHERE MaBanSao = @MaBanSao
+            EXEC sp_TuDongMuonTuDatCho @MaSach   -- giữ lại logic đặt chỗ tự động
         END
 
-        -- ================= 🔥 INSERT THANH TOÁN =================
-        INSERT INTO ThanhToan
-        (
-            MaThanhToan,
-            MaBanDoc,
-            NgayThanhToan,
-            SoTien,
-            HinhThucThanhToan,
-            GhiChu
-        )
-        VALUES
-        (
-            @MaThanhToan,
-            @MaBanDoc,
-            GETDATE(),
-            @TongTien,
-            @HinhThucThanhToan,
-            @GhiChu
-        )
+        -- ✅ Chỉ tạo bản ghi ThanhToan khi có tiền
+        IF (@TongTien > 0)
+        BEGIN
+            SET @MaThanhToan = 'TT' + REPLACE(LEFT(NEWID(), 8), '-', '')
 
-        -- 🔥 update phạt
-        UPDATE Phat
-        SET TrangThai = N'Đã thanh toán'
-        WHERE MaPhieuMuon = @MaPhieuMuon
-        AND TrangThai = N'Chưa thanh toán'
+            INSERT INTO ThanhToan
+                (MaThanhToan, MaBanDoc, NgayThanhToan, SoTien, HinhThucThanhToan, GhiChu)
+            VALUES
+                (@MaThanhToan, @MaBanDoc, GETDATE(), @TongTien, @HinhThucThanhToan, @GhiChu)
 
-        -- 🔥 trừ dư nợ
-        UPDATE BanDoc
-        SET DuNo = ISNULL(DuNo,0) - @TienPhat
-        WHERE MaBanDoc = @MaBanDoc
+            UPDATE Phat
+            SET TrangThai = N'Đã thanh toán'
+            WHERE MaPhieuMuon = @MaPhieuMuon
+              AND TrangThai = N'Chưa thanh toán'
 
-        -- 🔥 cập nhật phiếu mượn
+            UPDATE BanDoc
+            SET DuNo = ISNULL(DuNo, 0) - @TienPhat
+            WHERE MaBanDoc = @MaBanDoc
+        END
+
+        -- ✅ Luôn cập nhật trạng thái phiếu → Đã trả (dù tiền = 0)
         UPDATE PhieuMuon
         SET TrangThai = N'Đã trả'
         WHERE MaPhieuMuon = @MaPhieuMuon
 
         COMMIT
 
-        -- 🔥 trả kết quả
-        SELECT 
-            @MaThanhToan AS MaThanhToan,
-            @TienThue AS TienThue,
-            @TienPhat AS TienPhat,
-            @TongTien AS TongTien
+        SELECT
+            ISNULL(@MaThanhToan, '')  AS MaThanhToan,
+            @TienThue                 AS TienThue,
+            @TienPhat                 AS TienPhat,
+            @TongTien                 AS TongTien,
+            @TongTien                 AS SoTienTra,
+            0                         AS DuNoThem,
+            0                         AS TongDuNo
 
     END TRY
     BEGIN CATCH
         ROLLBACK
-        DECLARE @ErrorMessage NVARCHAR(4000)
-        SET @ErrorMessage = ERROR_MESSAGE()
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE()
         RAISERROR(@ErrorMessage, 16, 1)
     END CATCH
 END

@@ -2,6 +2,7 @@
 GO
 USE QuanLyThuVien_React
 GO 
+EXEC sp_helptext 'sp_TraSach'
 SELECT * FROM TaiKhoan
 CREATE TABLE BanDoc
 (
