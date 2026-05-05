@@ -1295,44 +1295,96 @@ CREATE OR ALTER PROCEDURE sp_TraSach
     @MaPhieuMuon NVARCHAR(20)
 AS
 BEGIN
-    DECLARE @MaBanSao NVARCHAR(20)
-    DECLARE @MaSach NVARCHAR(20)
+    SET NOCOUNT ON;
+    DECLARE @MaBanSao NVARCHAR(20), @MaSach NVARCHAR(20);
 
-    -- lấy MaBanSao
+    IF NOT EXISTS (
+        SELECT 1 FROM PhieuMuon
+        WHERE MaPhieuMuon = @MaPhieuMuon
+          AND TrangThai IN (N'Đang mượn', N'Đã nhận sách', N'Quá hạn')
+    )
+    BEGIN
+        RAISERROR(N'Phiếu không hợp lệ hoặc đã được xử lý', 16, 1);
+        RETURN;
+    END
+
     SELECT @MaBanSao = MaBanSao
     FROM PhieuMuon
-    WHERE MaPhieuMuon = @MaPhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon;
 
-    -- lấy MaSach từ BanSao
     SELECT @MaSach = MaSach
     FROM BanSao
-    WHERE MaBanSao = @MaBanSao
+    WHERE MaBanSao = @MaBanSao;
 
-    -- cập nhật phiếu
     UPDATE PhieuMuon
     SET TrangThai = N'Đã trả'
     WHERE MaPhieuMuon = @MaPhieuMuon
+      AND TrangThai IN (N'Đang mượn', N'Đã nhận sách', N'Quá hạn');
 
-    -- trả sách về kho
-    UPDATE BanSao
-    SET TrangThai = N'Trong kho'
-    WHERE MaBanSao = @MaBanSao
+    IF NOT EXISTS (
+        SELECT 1 FROM PhieuMuon
+        WHERE MaBanSao = @MaBanSao
+          AND TrangThai IN (N'Đang mượn', N'Đã nhận sách', N'Quá hạn')
+    )
+    BEGIN
+        UPDATE BanSao
+        SET TrangThai = N'Trong kho'
+        WHERE MaBanSao = @MaBanSao;
+    END
 
-    EXEC sp_TuDongMuonTuDatCho @MaSach
+    EXEC sp_TuDongMuonTuDatCho @MaSach;
 END
-
+-- Xem bản sao nào bị gán cho nhiều phiếu
+-- Xem phiếu nào đang thật sự mượn (chưa trả)
+-- Xem sp_DuyetMuon hiện tại có kiểm tra BanSao không
+SELECT OBJECT_DEFINITION(OBJECT_ID('sp_DuyetMuon'));
 --Gia hạn
-CREATE PROCEDURE sp_GiaHan
+CREATE OR ALTER PROCEDURE sp_GiaHan
     @MaPhieuMuon NVARCHAR(20),
-    @SoNgayThem INT
+    @SoNgayThem  INT
 AS
 BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @HanTra DATE, @TrangThai NVARCHAR(20);
+    DECLARE @SoNgayTre INT = 0;
+    DECLARE @TienPhat DECIMAL(18,2) = 0;
+    DECLARE @GiaMotNgay DECIMAL(18,2) = 5000; -- tuỳ chỉnh
+
+    SELECT @HanTra = HanTra, @TrangThai = TrangThai
+    FROM PhieuMuon
+    WHERE MaPhieuMuon = @MaPhieuMuon;
+
+    IF @TrangThai NOT IN (N'Đang mượn', N'Đã nhận sách', N'Quá hạn')
+    BEGIN
+        RAISERROR(N'Chỉ có thể gia hạn phiếu đang mượn hoặc quá hạn', 16, 1);
+        RETURN;
+    END
+
+    -- Tính số ngày trễ nếu đã quá hạn
+    -- Ghi nhận phạt (nếu đã quá hạn)
+IF CAST(GETDATE() AS DATE) > @HanTra
+BEGIN
+    SET @SoNgayTre = DATEDIFF(DAY, @HanTra, CAST(GETDATE() AS DATE));
+    SET @TienPhat = @SoNgayTre * @GiaMotNgay;
+
+    INSERT INTO Phat (MaPhat, MaPhieuMuon, SoTien, LyDoPhat, NgayTinh, TrangThai)
+    VALUES (
+        'P' + FORMAT(GETDATE(), 'yyyyMMddHHmmss'),
+        @MaPhieuMuon,
+        @TienPhat,
+        N'Phạt gia hạn trễ ' + CAST(@SoNgayTre AS NVARCHAR) + N' ngày',
+        CAST(GETDATE() AS DATE),
+        N'Chưa thanh toán'
+    );
+END
+
+    -- Gia hạn từ HÔM NAY (không phải từ HanTra cũ nếu đã trễ)
     UPDATE PhieuMuon
-    SET 
-        HanTra = DATEADD(DAY, @SoNgayThem, HanTra),
-        SoLanGiaHan = SoLanGiaHan + 1
-    WHERE MaPhieuMuon = @MaPhieuMuon
-    AND TrangThai = N'Đã nhận sách'
+    SET HanTra      = DATEADD(DAY, @SoNgayThem, CAST(GETDATE() AS DATE)),
+        SoLanGiaHan = SoLanGiaHan + 1,
+        TrangThai   = N'Đang mượn'   -- reset về đang mượn nếu đang là Quá hạn
+    WHERE MaPhieuMuon = @MaPhieuMuon;
 END
 
 --Kiểm tra quá hạn
@@ -2012,9 +2064,7 @@ BEGIN
 END
 GO
 
-EXEC sp_TraSach
-EXEC sp_TraSach @MaPhieuMuon = 'PM001'
-EXEC sp_ThanhToanPhat @MaPhat = 'P0001', @HinhThucThanhToan = N'Tiền mặt'
+
 UPDATE Phat
 SET TrangThai = N'Chưa thanh toán'
 WHERE MaPhat = 'P0001'
