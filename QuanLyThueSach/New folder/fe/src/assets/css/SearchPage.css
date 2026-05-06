@@ -1,0 +1,214 @@
+/* =============================================
+   SEARCH PAGE — Polished Library Style
+   Theme: Warm amber accent / deep navy
+   ============================================= */
+
+.search-page {
+    padding: 28px 48px 60px;
+    background: #f4f5f8;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* HEADER */
+.search-header {
+    background: #fff;
+    padding: 20px 24px 18px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px rgba(26, 37, 64, 0.07);
+    border: 1.5px solid #f0f0f0;
+}
+
+.breadcrumb {
+    font-size: 12.5px;
+    color: #aaa;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+}
+
+.breadcrumb span {
+    color: #1a2540;
+    font-weight: 600;
+}
+
+.search-title {
+    margin: 0 0 14px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a2540;
+    letter-spacing: -0.4px;
+}
+
+.search-title span {
+    color: #ff7a00;
+}
+
+/* TOP BAR */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* RESULT COUNT */
+.result-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff8f2;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #555;
+    border: 1.5px solid #ffe0c4;
+}
+
+.result-count .count {
+    background: linear-gradient(135deg, #ff7a00, #ff3d00);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.result-count .keyword {
+    color: #ff7a00;
+    font-weight: 700;
+}
+
+/* SELECT FILTERS */
+.top-bar select {
+    height: 36px;
+    border-radius: 9px;
+    border: 1.5px solid #e0e0e0;
+    padding: 0 12px;
+    font-size: 13.5px;
+    background: #fff;
+    cursor: pointer;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+
+.top-bar select:hover,
+.top-bar select:focus {
+    border-color: #ff7a00;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* CARD */
+.card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1.5px solid #f0f0f0;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    border-color: #ff7a00;
+    box-shadow: 0 12px 32px rgba(255, 122, 0, 0.18);
+}
+
+/* IMAGE */
+.img-box {
+    height: 240px;
+    overflow: hidden;
+    background: #f8f8f8;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+    display: block;
+}
+
+.card:hover .img-box img {
+    transform: scale(1.07);
+}
+
+/* INFO */
+.info {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Title inside cards — scope to .info to avoid conflict with section titles */
+.info .title,
+.grid .title {
+    font-size: 14.5px !important;
+    font-weight: 700;
+    color: #1a2540;
+    margin-bottom: 4px;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.45;
+}
+
+.author {
+    font-size: 12px;
+    text-align: center;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.category {
+    font-size: 11px;
+    background: #fff3e6;
+    color: #ff7a00;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    width: fit-content;
+    margin: 4px auto 0;
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid #ffe0c4;
+}
+
+/* EMPTY STATE */
+.search-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #aaa;
+}
+
+.search-empty .emoji {
+    font-size: 56px;
+    margin-bottom: 16px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .search-page { padding: 20px 20px 40px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+
+@media (max-width: 560px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .top-bar { flex-direction: column; align-items: flex-start; }
+}
