@@ -1349,7 +1349,7 @@ BEGIN
     DECLARE @HanTra DATE, @TrangThai NVARCHAR(20);
     DECLARE @SoNgayTre INT = 0;
     DECLARE @TienPhat DECIMAL(18,2) = 0;
-    DECLARE @GiaMotNgay DECIMAL(18,2) = 5000; -- tuỳ chỉnh
+    DECLARE @GiaMotNgay DECIMAL(18,2) = 1500; -- tuỳ chỉnh
 
     SELECT @HanTra = HanTra, @TrangThai = TrangThai
     FROM PhieuMuon
@@ -1898,7 +1898,7 @@ BEGIN
             @TienThue      DECIMAL = 0,
             @TienPhat      DECIMAL = 0,
             @TongTien      DECIMAL = 0,
-            @GiaMotNgay    DECIMAL = 5000,   -- thống nhất với sp_PreviewThanhToan
+            @GiaMotNgay    DECIMAL = 1500,  
             @MaThanhToan   NVARCHAR(20),
             @SoNgayMuon    INT
 
