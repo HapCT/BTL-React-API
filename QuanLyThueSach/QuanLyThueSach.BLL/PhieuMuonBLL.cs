@@ -31,12 +31,12 @@ namespace QuanLyThueSach.BLL
             {
                 _repository = repository;
             }
+
             public async Task<Respon<HoaDonModel>> TinhTienAsync(string maPhieuMuon)
             {
                 try
                 {
                     var data = await _repository.TinhTienAsync(maPhieuMuon);
-
                     return new Respon<HoaDonModel>
                     {
                         StatusCode = 200,
@@ -54,6 +54,7 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
+
             // 🔹 Lấy danh sách
             public async Task<Respon<List<PhieuMuonViewModel>>> GetAsync()
             {
@@ -125,6 +126,7 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
+
             public async Task<Respon<string>> DangKyMuonOff(TaoPhieuMuonOfflineRequest request)
             {
                 try
@@ -147,7 +149,7 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
-                
+
             // 🔹 Duyệt mượn
             public async Task<Respon<string>> DuyetMuonAsync(string maPhieuMuon)
             {
@@ -220,12 +222,27 @@ namespace QuanLyThueSach.BLL
                 }
             }
 
-            // 🔹 Hủy
+            // 🔹 Hủy phiếu
+            // - InvalidOperationException: lỗi nghiệp vụ từ SP (sai trạng thái) → 400
+            // - Exception khác: lỗi hệ thống → 500
             public async Task<Respon<string>> HuyAsync(string maPhieuMuon)
             {
                 try
                 {
-                    await _repository.HuyAsync(maPhieuMuon);
+                    int rows = await _repository.HuyAsync(maPhieuMuon);
+
+                    if (rows == 0)
+                    {
+                        // SP chạy thành công nhưng không cập nhật dòng nào
+                        // → phiếu không tồn tại hoặc đã ở trạng thái không thể huỷ
+                        return new Respon<string>
+                        {
+                            StatusCode = 400,
+                            Message = "Không thể huỷ phiếu. Phiếu không tồn tại hoặc trạng thái không hợp lệ (chỉ huỷ được khi đang ở trạng thái Chờ duyệt / Đăng ký mượn).",
+                            Data = null
+                        };
+                    }
+
                     return new Respon<string>
                     {
                         StatusCode = 200,
@@ -233,8 +250,19 @@ namespace QuanLyThueSach.BLL
                         Data = null
                     };
                 }
+                catch (InvalidOperationException ex)
+                {
+                    // Lỗi nghiệp vụ từ RAISERROR / THROW trong stored procedure
+                    return new Respon<string>
+                    {
+                        StatusCode = 400,
+                        Message = ex.Message,
+                        Data = null
+                    };
+                }
                 catch (Exception ex)
                 {
+                    // Lỗi hệ thống (kết nối DB, timeout, ...)
                     return new Respon<string>
                     {
                         StatusCode = 500,
@@ -243,6 +271,7 @@ namespace QuanLyThueSach.BLL
                     };
                 }
             }
+
             public async Task<Respon<object>> XoaPhieuMuonAsync(string maPhieuMuon)
             {
                 var result = await _repository.XoaPhieuMuon(maPhieuMuon);

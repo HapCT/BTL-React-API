@@ -12,7 +12,7 @@ namespace QuanLyThueSach.DAL
             Task<List<PhieuMuonViewModel>> GetAsync();
             Task<List<PhieuMuonViewModel>> TimTheoBanDocAsync(string maBanDoc);
             Task<int> DangKyMuonAsync(MuonOline muonOnline);
-            Task<int> DangKyMuonOff (TaoPhieuMuonOfflineRequest request);
+            Task<int> DangKyMuonOff(TaoPhieuMuonOfflineRequest request);
             Task<int> DuyetMuonAsync(string maPhieuMuon);
             Task<int> TraSachAsync(string maPhieuMuon);
             Task<int> GiaHanAsync(string maPhieuMuon, int soNgayThem);
@@ -29,6 +29,7 @@ namespace QuanLyThueSach.DAL
             {
                 _con = configuration.GetConnectionString("DefaultConnection");
             }
+
             public async Task<HoaDonModel> TinhTienAsync(string maPhieuMuon)
             {
                 using var connect = new SqlConnection(_con);
@@ -36,7 +37,6 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_TinhTien", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", maPhieuMuon);
 
                 using var rd = await cmd.ExecuteReaderAsync();
@@ -53,10 +53,10 @@ namespace QuanLyThueSach.DAL
 
                 return null;
             }
+
             // 🔹 Hiển thị tất cả (JOIN ra ViewModel)
             public async Task<List<PhieuMuonViewModel>> GetAsync()
             {
-
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
 
@@ -68,7 +68,7 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_HienThiPhieuMuon", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-                
+
                 var list = new List<PhieuMuonViewModel>();
                 using var rd = await cmd.ExecuteReaderAsync();
 
@@ -98,7 +98,6 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_XemPhieuMuonTheoBanDoc", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaBanDoc", maBanDoc);
 
                 using var rd = await cmd.ExecuteReaderAsync();
@@ -120,26 +119,26 @@ namespace QuanLyThueSach.DAL
                 return list;
             }
 
-            // 🔹Đăng ký mượn (online)
+            // 🔹 Đăng ký mượn (online)
             public async Task<int> DangKyMuonAsync(MuonOline muonOnline)
             {
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
 
-                // Dùng SP riêng cho online: tự chọn MaBanSao từ MaSach
                 using var cmd = new SqlCommand("sp_DangKyMuonOnline", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaBanDoc", muonOnline.MaBanDoc);
                 cmd.Parameters.AddWithValue("@MaSach", muonOnline.MaSach);
                 cmd.Parameters.AddWithValue("@HanTra", muonOnline.HanTra);
 
                 return await cmd.ExecuteNonQueryAsync();
             }
+
             public async Task<int> DangKyMuonOff(TaoPhieuMuonOfflineRequest request)
             {
                 using var connect = new SqlConnection(_con);
                 await connect.OpenAsync();
+
                 using var cmd = new SqlCommand("sp_TaoPhieuMuon_Offline", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@MaBanDoc", request.MaBanDoc);
@@ -147,9 +146,11 @@ namespace QuanLyThueSach.DAL
                 cmd.Parameters.AddWithValue("@NgayTao", request.NgayTao);
                 cmd.Parameters.AddWithValue("@NgayMuon", request.NgayMuon);
                 cmd.Parameters.AddWithValue("@HanTra", request.HanTra);
+
                 return await cmd.ExecuteNonQueryAsync();
             }
-            //  Duyệt mượn
+
+            // 🔹 Duyệt mượn
             public async Task<int> DuyetMuonAsync(string maPhieuMuon)
             {
                 using var connect = new SqlConnection(_con);
@@ -157,13 +158,12 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_DuyetMuon", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", maPhieuMuon);
 
                 return await cmd.ExecuteNonQueryAsync();
             }
 
-            //  Trả sách
+            // 🔹 Trả sách
             public async Task<int> TraSachAsync(string maPhieuMuon)
             {
                 using var connect = new SqlConnection(_con);
@@ -171,13 +171,12 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_TraSach", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", maPhieuMuon);
 
                 return await cmd.ExecuteNonQueryAsync();
             }
 
-            //  Gia hạn
+            // 🔹 Gia hạn
             public async Task<int> GiaHanAsync(string maPhieuMuon, int soNgayThem)
             {
                 using var connect = new SqlConnection(_con);
@@ -185,14 +184,13 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_GiaHan", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", maPhieuMuon);
                 cmd.Parameters.AddWithValue("@SoNgayThem", soNgayThem);
 
                 return await cmd.ExecuteNonQueryAsync();
             }
 
-            //  Hủy phiếu
+            // 🔹 Hủy phiếu — bắt lỗi SQL để truyền message nghiệp vụ từ SP lên trên
             public async Task<int> HuyAsync(string maPhieuMuon)
             {
                 using var connect = new SqlConnection(_con);
@@ -200,11 +198,19 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_HuyPhieuMuon", connect);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", maPhieuMuon);
 
-                return await cmd.ExecuteNonQueryAsync();
+                try
+                {
+                    return await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SqlException ex)
+                {
+                    // Ném lại với message từ SP (RAISERROR / THROW trong SQL)
+                    throw new InvalidOperationException(ex.Message);
+                }
             }
+
             public async Task<bool> XoaPhieuMuon(string maPhieuMuon)
             {
                 using var conn = new SqlConnection(_con);
@@ -212,7 +218,6 @@ namespace QuanLyThueSach.DAL
 
                 using var cmd = new SqlCommand("sp_XoaPhieuMuon", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-
                 cmd.Parameters.AddWithValue("@MaPhieuMuon", maPhieuMuon);
 
                 try
@@ -225,7 +230,6 @@ namespace QuanLyThueSach.DAL
                     return false;
                 }
             }
-
         }
     }
 }

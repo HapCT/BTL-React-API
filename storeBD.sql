@@ -1398,50 +1398,56 @@ BEGIN
 END
 
 --Huỷ phiếu 
+ DROP PROCEDURE sp_HuyPhieuMuon;
 CREATE PROCEDURE sp_HuyPhieuMuon
-    @MaPhieuMuon NVARCHAR(20)
-AS
-BEGIN
--- ✅ Sửa
-	UPDATE PhieuMuon
-	SET TrangThai = N'Huỷ'
-	WHERE TrangThai = N'Đăng ký mượn'
-	AND MaPhieuMuon = @MaPhieuMuon  -- ← còn thiếu cái này nữa!
-END
-
---Xoá
-CREATE PROCEDURE sp_XoaPhieuMuon
     @MaPhieuMuon NVARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @TrangThai NVARCHAR(50)
+    BEGIN TRY
+        BEGIN TRAN;
 
-    -- Lấy trạng thái
-    SELECT @TrangThai = TrangThai
-    FROM PhieuMuon
-    WHERE MaPhieuMuon = @MaPhieuMuon
+        IF NOT EXISTS (
+            SELECT 1 FROM PhieuMuon
+            WHERE MaPhieuMuon = @MaPhieuMuon
+              AND TrangThai IN (N'Đăng ký mượn')
+        )
+        BEGIN
+            RAISERROR(N'Chỉ có thể hủy phiếu đang ở trạng thái Chờ duyệt hoặc Đăng ký mượn', 16, 1);
+            ROLLBACK TRAN;
+            RETURN;
+        END
 
-    -- Không tồn tại
-    IF @TrangThai IS NULL
-    BEGIN
-        RAISERROR(N'Phiếu không tồn tại',16,1)
-        RETURN
-    END
+        UPDATE bs
+        SET bs.TrangThai = N'Trong kho'
+        FROM BanSao bs
+        JOIN PhieuMuon pm ON bs.MaBanSao = pm.MaBanSao
+        WHERE pm.MaPhieuMuon = @MaPhieuMuon
+          AND bs.TrangThai IN (N'Đang mượn');
 
-    -- Không cho xoá nếu đã nhận sách
-    IF @TrangThai NOT IN (N'Đăng ký mượn', N'Huỷ')
-    BEGIN
-        RAISERROR(N'Không thể xoá phiếu đã xử lý',16,1)
-        RETURN
-    END
+        UPDATE PhieuMuon
+        SET TrangThai = N'Huỷ'
+        WHERE MaPhieuMuon = @MaPhieuMuon;
 
-    DELETE FROM PhieuMuon
-    WHERE MaPhieuMuon = @MaPhieuMuon
-
-    PRINT N'Xoá phiếu thành công'
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRAN;
+        DECLARE @Err NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@Err, 16, 1);
+    END CATCH
 END
+GO
+EXEC sp_HuyPhieuMuon 'PM032';
+-- Xem constraint đang cho phép giá trị nào
+SELECT cc.definition 
+FROM sys.check_constraints cc
+JOIN sys.tables t ON cc.parent_object_id = t.object_id
+WHERE t.name = 'PhieuMuon' AND cc.name = 'CK_PhieuMuon_TrangThai';
+-- Kiểm tra xem SP đã cập nhật chưa
+EXEC sp_HuyPhieuMuon 'PM032';
+GO
 --Đặt chỗ
 --đặt
 CREATE SEQUENCE Seq_DatCho
@@ -2445,6 +2451,7 @@ GO
 -- ============================================================
 CREATE OR ALTER PROCEDURE sp_DuyetMuon
     @MaPhieuMuon NVARCHAR(20)
+
 AS
 BEGIN
     SET NOCOUNT ON;
