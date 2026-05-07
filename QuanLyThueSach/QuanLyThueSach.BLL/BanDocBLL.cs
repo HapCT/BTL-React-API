@@ -106,7 +106,6 @@ namespace QuanLyThueSach.BLL
             }
             public async Task<int> UpdateAsync(string maBanDoc, UpdateBanDoc updateBanDoc)
             {
-                updateBanDoc.TrangThaiThe = MapTrangThai(updateBanDoc.TrangThaiThe);
                 return await _respository.UpdateAsync(maBanDoc, updateBanDoc);
             }
             public async Task<int> DeleteAsync(string maBanDoc)

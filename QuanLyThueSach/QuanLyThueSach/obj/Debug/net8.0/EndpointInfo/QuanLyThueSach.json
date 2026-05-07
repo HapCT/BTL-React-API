@@ -2815,14 +2815,6 @@
             "type": "string",
             "nullable": true
           },
-          "hanThe": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "trangThaiThe": {
-            "type": "string",
-            "nullable": true
-          },
           "duNo": {
             "type": "number",
             "format": "double"

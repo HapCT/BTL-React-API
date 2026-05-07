@@ -33,8 +33,6 @@ namespace QuanLyThueSach.Models
         public string Hoten { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string SoDienThoai { get; set; } = default!;
-        public DateTime HanThe { get; set;} = default!;
-        public string TrangThaiThe { get; set; } = default!;
         public decimal DuNo { get; set; } = default!;
         public string CCCD { get; set; } = default!;
 

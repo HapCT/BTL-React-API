@@ -3,20 +3,22 @@
 -- Bạn đọc 
 
 --Hiện bạn đọc 
-CREATE PROCEDURE sp_HienBanDoc
+SELECT * FROM BanDoc
+ALTER PROCEDURE sp_HienBanDoc
 AS
 BEGIN
-	SELECT 
-	MaBanDoc,
-	SoThe,
-	HoTen,
-	Email,
-	SoDienThoai,
-	HanThe,
-	TrangThaiThe,
-	DuNo,
-	CCCD 
-	FROM BanDoc
+    SELECT 
+        MaBanDoc,
+        SoThe,
+        HoTen,
+        SoDienThoai,
+        Email,
+        HanThe,
+        TrangThaiThe,
+        DuNo,
+        CCCD 
+    FROM BanDoc
+    WHERE TrangThai != 'DaXoa'
 END
 INSERT INTO TaiKhoan
 (
@@ -79,13 +81,12 @@ BEGIN
 END
 SELECT * FROM BanDoc
 -- Sửa bạn đọc 
+DROP PROCEDURE sp_SuaBanDoc
 CREATE PROCEDURE sp_SuaBanDoc
 	@MaBanDoc NVARCHAR(20),
 	@HoTen NVARCHAR(50),
 	@Email NVARCHAR(100),
 	@SoDienThoai NVARCHAR(10),
-	@HanThe DATE,
-	@TrangThaiThe NVARCHAR(20),
 	@DuNo DECIMAL(10,2),
 	@CCCD CHAR(12)
 AS
@@ -103,14 +104,27 @@ BEGIN
 		HoTen = @HoTen,
 		Email = @Email,
 		SoDienThoai = @SoDienThoai,
-		HanThe = @HanThe,
-		TrangThaiThe = @TrangThaiThe,
 		CCCD = @CCCD
 	WHERE MaBanDoc = @MaBanDoc
 
 END
 GO
+UPDATE BanDoc
+SET
+    Email = 'admin@gmail.com',
+    SoDienThoai = '0900000000'
+WHERE MaBanDoc = 'BD004';
+UPDATE BanDoc
+SET
+    Email = 'phamhuyanh44@gmail.com',
+    SoDienThoai = '0396830321'
+WHERE MaBanDoc = 'BD005';
 
+UPDATE BanDoc
+SET
+    Email = 'letienlinh2005@gmail.com',
+    SoDienThoai = '0789654321'
+WHERE MaBanDoc = 'BD006';
 -- Xoá bạn đọc 
 CREATE OR ALTER PROCEDURE sp_XoaBanDoc
 	@MaBanDoc NVARCHAR(20)
@@ -2449,6 +2463,7 @@ GO
 -- FIX Bug 3b: sp_DuyetMuon cũng cần đổi trạng thái 'Chờ duyệt' → 'Đang mượn'
 -- vì sp_DangKyMuonOnline đặt BanSao thành 'Chờ duyệt' thay vì 'Trong kho'
 -- ============================================================
+SELECT * FROM ThanhToan
 CREATE OR ALTER PROCEDURE sp_DuyetMuon
     @MaPhieuMuon NVARCHAR(20)
 

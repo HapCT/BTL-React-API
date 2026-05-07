@@ -138,8 +138,6 @@ namespace QuanLyThueSach.DAL
                 cmd.Parameters.AddWithValue("@Hoten", updateBanDoc.Hoten);
                 cmd.Parameters.AddWithValue("@Email", updateBanDoc.Email);
                 cmd.Parameters.AddWithValue("@SoDienThoai", updateBanDoc.SoDienThoai);
-                cmd.Parameters.AddWithValue("@HanThe", updateBanDoc.HanThe);
-                cmd.Parameters.AddWithValue("@TrangThaiThe", updateBanDoc.TrangThaiThe);
                 cmd.Parameters.AddWithValue("@DuNo", updateBanDoc.DuNo);
                 cmd.Parameters.AddWithValue("@CCCD", updateBanDoc.CCCD);
                 return await cmd.ExecuteNonQueryAsync();
